@@ -29,6 +29,7 @@
 }
 
 .ifaq-form-wrapper textarea,
+.ifaq-form-wrapper select,
 .ifaq-form-wrapper input[type="text"] {
     width: 100%;
     max-width: 100%;
@@ -41,11 +42,14 @@
 }
 
 .ifaq-form-wrapper textarea:focus,
+.ifaq-form-wrapper select:focus,
 .ifaq-form-wrapper input[type="text"]:focus {
     border-color: #2271b1;
     outline: none;
 }
-
+.ifaq_required{
+    color:red;
+}
 .ifaq-form-wrapper .submit {
     margin-top: 20px;
 }
