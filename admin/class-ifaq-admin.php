@@ -107,15 +107,29 @@ class Ifaq_Admin {
             'interactive-faq',
             'manage_options',
             'ifaq_settings',
-            [$this, 'render_settings_page'],
+            [$this, 'render_interactive_faq'],
             'dashicons-editor-help',
             20
         );
+
+        // Add "Add New" submenu under "Interactive FAQ"
+        add_submenu_page(
+            'ifaq_settings', // Parent slug (must match the menu slug above)
+            'Add New FAQ',   // Page title
+            'Add New',       // Submenu label
+            'manage_options',
+            'ifaq_add_new',  // Submenu slug
+            [$this, 'render_ifaq_admin_add_new'] // Callback method
+        );
     }
 
-    public function render_settings_page() {
+    public function render_interactive_faq() {
         //admin partials
-        require_once IFAQ_PLUGIN_DIR.'/admin/partials/interactive-faq-form.php';
+        require_once IFAQ_PLUGIN_DIR.'/admin/partials/ifaq-admin-display.php';
+    }
+
+    public function render_ifaq_admin_add_new() {
+        require_once IFAQ_PLUGIN_DIR.'/admin/partials/ifaq-admin-add-new-form.php';
     }
 
 }
