@@ -51,6 +51,7 @@ class Ifaq_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+        add_action('admin_menu', [$this, 'add_admin_menu']);
 
 	}
 
@@ -99,5 +100,22 @@ class Ifaq_Admin {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/ifaq-admin.js', array( 'jquery' ), $this->version, false );
 
 	}
+
+    public function add_admin_menu() {
+        add_menu_page(
+            'Interactive FAQ',
+            'interactive-faq',
+            'manage_options',
+            'ifaq_settings',
+            [$this, 'render_settings_page'],
+            'dashicons-editor-help',
+            20
+        );
+    }
+
+    public function render_settings_page() {
+        //admin partials
+        require_once IFAQ_PLUGIN_DIR.'/admin/partials/interactive-faq-form.php';
+    }
 
 }
