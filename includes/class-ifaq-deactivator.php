@@ -29,8 +29,15 @@ class Ifaq_Deactivator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function deactivate() {
-
+	public function deactivate() {
+        $this->deleteTable();
 	}
+
+    private function deleteTable() {
+        global $wpdb;
+        //delete table
+        $table_name = $wpdb->prefix . 'interactive_faq';
+        $wpdb->query("DROP TABLE IF EXISTS $table_name");
+    }
 
 }

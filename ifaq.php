@@ -53,7 +53,8 @@ function activate_ifaq() {
  */
 function deactivate_ifaq() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-ifaq-deactivator.php';
-	Ifaq_Deactivator::deactivate();
+    $deactivate = new Ifaq_Deactivator();
+	$deactivate->deactivate();
 }
 
 register_activation_hook( __FILE__, 'activate_ifaq' );
