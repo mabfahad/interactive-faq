@@ -2,3 +2,50 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+.ifaq-form-wrapper {
+    background: #fff;
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    max-width: 800px;
+    margin-top: 20px;
+}
+
+.ifaq-form-wrapper h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e2e2e2;
+    padding-bottom: 10px;
+}
+
+.ifaq-form-wrapper table.form-table th {
+    width: 120px;
+    vertical-align: top;
+    padding-top: 10px;
+}
+
+.ifaq-form-wrapper table.form-table td {
+    padding-bottom: 15px;
+}
+
+.ifaq-form-wrapper textarea,
+.ifaq-form-wrapper input[type="text"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.ifaq-form-wrapper textarea:focus,
+.ifaq-form-wrapper input[type="text"]:focus {
+    border-color: #2271b1;
+    outline: none;
+}
+
+.ifaq-form-wrapper .submit {
+    margin-top: 20px;
+}
