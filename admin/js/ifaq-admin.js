@@ -29,4 +29,12 @@
 	 * practising this, we should strive to set a better example in our own work.
 	 */
 
+    $(document).ready(function($) {
+        $('.ifaq-question').on('click', function () {
+            var $answer = $(this).next('.ifaq-answer');
+            $(this).toggleClass('active');
+            $answer.slideToggle(200);
+        });
+    });
+
 })( jQuery );

@@ -53,3 +53,118 @@
 .ifaq-form-wrapper .submit {
     margin-top: 20px;
 }
+
+/*
+interactive faq lists
+ */
+.ifaq-accordion {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 15px;
+    max-width: 900px;
+    margin-top: 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.ifaq-accordion-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    background-color: #fff;
+    transition: box-shadow 0.3s;
+}
+
+.ifaq-accordion-item:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.ifaq-question {
+    padding: 16px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    color: #23282d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ifaq-icon {
+    transition: transform 0.3s ease;
+    font-size: 16px;
+    color: #666;
+}
+
+.ifaq-question.active .ifaq-icon {
+    transform: rotate(180deg);
+}
+
+.ifaq-answer {
+    display: none;
+    padding: 0 20px 15px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ifaq-meta {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #777;
+}
+
+.ifaq-status.active {
+    color: green;
+    font-weight: 600;
+}
+
+.ifaq-status.deactive {
+    color: red;
+    font-weight: 600;
+}
+
+.ifaq-actions {
+    margin-top: 10px;
+}
+
+.ifaq-actions a {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.ifaq-actions a.edit {
+    background-color: #0073aa;
+    color: #fff;
+}
+
+.ifaq-actions a.edit:hover {
+    background-color: #005a87;
+}
+
+.ifaq-actions a.delete {
+    background-color: #ca4a1f;
+    color: #fff;
+}
+
+.ifaq-actions a.delete:hover {
+    background-color: #a33e1a;
+}
