@@ -29,8 +29,30 @@ class Ifaq_Activator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function activate() {
-
+	public function activate() {
+        $this->createTable();
 	}
+
+    private function createTable(){
+        global $wpdb;
+
+        $table_name = $wpdb->prefix . 'interactive_faq';
+
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE $table_name (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            question text NOT NULL,
+            answer text NOT NULL,
+            category varchar(100) DEFAULT 'general',
+            order_num int DEFAULT 0,
+            status enum('active', 'deactive') DEFAULT 'active',
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        ) $charset_collate;";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
 
 }

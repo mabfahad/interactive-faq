@@ -43,7 +43,8 @@ define( 'IFAQ_VERSION', '1.0.0' );
  */
 function activate_ifaq() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-ifaq-activator.php';
-	Ifaq_Activator::activate();
+    $activator = new Ifaq_Activator();
+	$activator->activate();
 }
 
 /**
