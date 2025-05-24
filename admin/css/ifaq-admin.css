@@ -2,35 +2,67 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
-.ifaq-form-wrapper {
+/*
+* Start Common CSS for all
+*/
+.ifaq-container {
+    max-width: 850px;
     background: #fff;
-    padding: 20px 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    max-width: 800px;
-    margin-top: 20px;
+    padding: 40px;
+    margin: auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
-.ifaq-form-wrapper h1 {
-    font-size: 24px;
+.ifaq-container h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+    color: #23282d;
+}
+
+.ifaq-container p {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.ifaq-container h2 {
+    font-size: 20px;
+    border-bottom: 2px solid #e2e2e2;
+    padding-bottom: 8px;
+    margin-top: 40px;
     margin-bottom: 20px;
-    border-bottom: 1px solid #e2e2e2;
-    padding-bottom: 10px;
+    color: #333;
+}
+.ifaq-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top:20px;
 }
 
-.ifaq-form-wrapper table.form-table th {
-    width: 120px;
-    vertical-align: top;
-    padding-top: 10px;
+.ifaq-form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
-.ifaq-form-wrapper table.form-table td {
-    padding-bottom: 15px;
+.ifaq-form-row label {
+    flex: 1;
+    font-weight: 600;
+    color: #333;
 }
 
-.ifaq-form-wrapper textarea,
-.ifaq-form-wrapper select,
-.ifaq-form-wrapper input[type="text"] {
+.ifaq-form-row .input-field {
+    flex: 2;
+    max-width: 400px;
+}
+
+textarea,
+select,
+input
+{
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
@@ -41,17 +73,54 @@
     transition: border-color 0.2s ease-in-out;
 }
 
-.ifaq-form-wrapper textarea:focus,
-.ifaq-form-wrapper select:focus,
-.ifaq-form-wrapper input[type="text"]:focus {
+input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+textarea:focus,
+select:focus,
+input[type="text"]:focus {
     border-color: #2271b1;
     outline: none;
 }
 .ifaq_required{
     color:red;
 }
-.ifaq-form-wrapper .submit {
+
+.form-actions {
+    margin-top: 40px;
+    display: flex;
+    gap: 15px;
+}
+.submit {
     margin-top: 20px;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.button-primary {
+    background-color: #007cba;
+    color: #fff;
+}
+
+.button-primary:hover {
+    background-color: #006ba1;
+}
+
+.button-secondary {
+    background-color: #e2e2e2;
+    color: #333;
+}
+
+.button-secondary:hover {
+    background-color: #d2d2d2;
 }
 
 /*
