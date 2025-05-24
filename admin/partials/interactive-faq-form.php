@@ -3,7 +3,7 @@
 
     <form method="post" action="">
         <?php wp_nonce_field('save_faq', 'faq_nonce'); ?>
-        <table class="form-table">
+        <table class="ifaq-form-table">
             <tr>
                 <th scope="row">Question</th>
                 <td><textarea name="question" rows="3" cols="50" required></textarea></td>
@@ -21,3 +21,4 @@
             <input type="submit" name="submit_faq" class="button-primary" value="Add FAQ">
         </p>
     </form>
+</div>
