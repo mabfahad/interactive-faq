@@ -104,9 +104,9 @@ class Ifaq_Admin {
     public function add_admin_menu() {
         add_menu_page(
             'Interactive FAQ',
-            'interactive-faq',
+            'Interactive FAQ',
             'manage_options',
-            'ifaq_settings',
+            'interactive-faq',
             [$this, 'render_interactive_faq'],
             'dashicons-editor-help',
             20
@@ -114,9 +114,9 @@ class Ifaq_Admin {
 
         // Add "Add New" submenu under "Interactive FAQ"
         add_submenu_page(
-            'ifaq_lists', // Parent slug (must match the menu slug above)
+            'interactive-faq', // Parent slug (must match the menu slug above)
             'Add New FAQ',   // Page title
-            'Add New',       // Submenu label
+            'Add New FAQ',       // Submenu label
             'manage_options',
             'ifaq_add_new',  // Submenu slug
             [$this, 'render_ifaq_admin_add_new'] // Callback method
@@ -124,9 +124,9 @@ class Ifaq_Admin {
 
         // Add "Add New" submenu under "Interactive FAQ"
         add_submenu_page(
-            'ifaq_settings', // Parent slug (must match the menu slug above)
-            'Interactive FAQ Settings ',   // Page title
-            'Interactive FAQ Settings',       // Submenu label
+            'interactive-faq', // Parent slug (must match the menu slug above)
+            'Settings ',   // Page title
+            'Settings',       // Submenu label
             'manage_options',
             'ifaq_settings',  // Submenu slug
             [$this, 'ifaq_settings'] // Callback method
