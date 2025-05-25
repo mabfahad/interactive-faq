@@ -1,9 +1,7 @@
 <div class="ifaq-container">
     <h1>Add New FAQ</h1>
 
-    <form method="post" action="">
-        <?php wp_nonce_field('save_faq', 'faq_nonce'); ?>
-
+    <form id="ifaq-add-new-form" method="post">
         <div class="ifaq-form-group">
         <div class="ifaq-form-row">
             <label for="display-style">Question<span class="ifaq_required">*</span> </label>

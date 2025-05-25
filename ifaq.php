@@ -68,6 +68,12 @@ register_deactivation_hook( __FILE__, 'deactivate_ifaq' );
 require plugin_dir_path( __FILE__ ) . 'includes/class-ifaq.php';
 
 /**
+ * Require all the classes
+ */
+
+require_once plugin_dir_path(__FILE__).'classes/Ifaq_Ajax.php';
+
+/**
  * Begins execution of the plugin.
  *
  * Since everything within the plugin is registered via hooks,

@@ -35,6 +35,33 @@
             $(this).toggleClass('active');
             $answer.slideToggle(200);
         });
+
+		$("#ifaq-add-new-form button").on('click', function (e) {
+			e.preventDefault();
+			const ifaq_question = $("#ifaq_question").val(); // get textarea value
+			const ifaq_answer = $("#ifaq_answer").val(); // get textarea value
+			const ifaq_category = $("ifaq_category").val();
+			const ifaq_status = $("#ifaq_status").val();
+
+			$.ajax({
+				url: ifaq_ajax.ajax_url,
+				method:'post',
+				data: {
+					action: 'save_ifaq_new',
+					question: ifaq_question,
+					answer: ifaq_answer,
+					ifaq_category: ifaq_category,
+					ifaq_status: ifaq_status,
+					nonce: ifaq_ajax.ifaq_nonce,
+				},
+				success: function (response) {
+					console.log(response);
+				},
+				error: function () {
+
+				}
+			});
+		});
     });
 
 })( jQuery );
