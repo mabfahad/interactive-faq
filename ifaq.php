@@ -72,6 +72,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-ifaq.php';
  */
 
 require_once plugin_dir_path(__FILE__).'classes/Ifaq_Ajax.php';
+require_once plugin_dir_path(__FILE__).'classes/class-ifaq-db.php';
 
 /**
  * Begins execution of the plugin.
