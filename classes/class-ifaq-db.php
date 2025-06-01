@@ -90,21 +90,29 @@ class Ifaq_DB
     }
 
     public function insert_interactive_faq($data)
-    {
-        $this->wpdb->insert(
-            $this->wpdb->prefix . 'faq',
-            ['question' => $data['question'],
-                'answer' => $data['answer'],
-                'category' => $data['category'],
-                'status' => $data['status'],
-                'created_at' => current_time('mysql'),] // format: Y-m-d H:i:s
-            ['%s'],
-            ['%s'],
-            ['%s'],
-            ['%s'],
-            ['%s'],
-        );
-    }
+{
+    $table = $this->wpdb->prefix . 'interactive_faq';
+
+    $result = $this->wpdb->insert(
+        $table,
+        [
+            'question'    => $data['question'],
+            'answer'      => $data['answer'],
+            'category_ids'=> maybe_serialize($data['category_ids'] ?? []),
+            'status'      => $data['status'],
+            'created_at'  => current_time('mysql'),
+        ],
+        [
+            '%s', // question
+            '%s', // answer
+            '%s', // category_ids (serialized string)
+            '%s', // status
+            '%s', // created_at
+        ]
+    );
+
+    return $result !== false; // returns true on success, false on failure
+}
 
     /**
      * Retrieve all categories from the FAQ category table.
