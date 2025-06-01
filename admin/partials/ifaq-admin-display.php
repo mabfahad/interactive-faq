@@ -50,18 +50,13 @@ $total      = $faqs_data['total_pages'];
         <?php endif; ?>
     </div>
 
-    <div class="pagination">
+    <div id="ifaq-pagination">
         <?php if ( $total > 1 ): ?>
-            <ul style="list-style: none; display: flex; gap: 8px; padding: 0;">
+            <ul>
                 <?php for ( $i = 1; $i <= $total; $i++ ): ?>
-                    <li>
-                        <a href="<?php echo esc_url( add_query_arg( 'paged', $i ) ); ?>"
-                           style="padding: 6px 12px; text-decoration: none; border: 1px solid #ccc; background: <?php echo $i === $current ? '#0073aa' : '#f9f9f9'; ?>; color: <?php echo $i === $current ? '#fff' : '#000'; ?>;">
-                            <?php echo $i; ?>
-                        </a>
-                    </li>
+                    <li><a href="<?php echo esc_url( add_query_arg( 'paged', $i ) ); ?>" class="<?php echo ($i === $current) ? 'active' : ''; ?>"><?php echo $i; ?></a></li>
                 <?php endfor; ?>
             </ul>
-        <?php endif; ?>
+        <?php endif;?>
     </div>
 </div>
