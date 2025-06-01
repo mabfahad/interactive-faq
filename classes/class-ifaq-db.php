@@ -17,14 +17,12 @@ class Ifaq_DB
         return $this->deleteTables();
     }
 
-    private function create_tables()
-    {
+    private function create_tables() {
 
         $charset_collate = $this->wpdb->get_charset_collate();
 
         $faq_table = $this->wpdb->prefix . 'interactive_faq';
         $category_table = $this->wpdb->prefix . 'faq_category';
-        $pivot_table = $this->wpdb->prefix . 'faq_category_pivot';
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -45,6 +43,7 @@ class Ifaq_DB
             id mediumint(9) unsigned NOT NULL AUTO_INCREMENT,
             question text NOT NULL,
             answer text NOT NULL,
+            category_ids longtext DEFAULT NULL,
             order_num int DEFAULT 0,
             status varchar(20) DEFAULT 'active',
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
@@ -52,17 +51,6 @@ class Ifaq_DB
         ) $charset_collate;";
 
         dbDelta($sql_faq);
-
-        // 3. Pivot Table
-        $sql_pivot = "CREATE TABLE $pivot_table (
-            faq_id mediumint(9) unsigned NOT NULL,
-            category_id mediumint(9) unsigned NOT NULL,
-            PRIMARY KEY (faq_id, category_id),
-            KEY idx_faq_id (faq_id),
-            KEY idx_category_id (category_id)
-        ) $charset_collate;";
-
-        dbDelta($sql_pivot);
     }
 
     private function deleteTables() {
