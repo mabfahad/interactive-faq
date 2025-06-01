@@ -34,8 +34,8 @@ $all_faqs = $ifaq_db->get_all_ifaqs();
                             Created: <?php echo esc_html($faq->created_at); ?>
                         </div>
                         <div class="ifaq-actions">
-                            <a href="#" class="edit">Edit</a>
-                            <a href="#" class="delete" onclick="return confirm('Are you sure you want to delete this FAQ?')">Delete</a>
+                            <a href="#" class="edit" data-faq-id="<?php echo esc_html( $faq->id ); ?>">Edit</a>
+                            <a href="#" class="delete">Delete</a>
                         </div>
                     </div>
                 </div>
