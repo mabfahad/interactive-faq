@@ -146,17 +146,36 @@ class Ifaq_DB
      *
      * @return array Array of FAQ objects, each with a 'categories' property containing category objects.
      */
-    public function get_all_ifaqs()
+    public function get_all_ifaqs($page = 1, $per_page = 10)
     {
         $faq_table = $this->wpdb->prefix . 'interactive_faq';
 
-        $faqs = $this->wpdb->get_results("SELECT * FROM $faq_table");
+        $page = max(1, intval($page));
+        $per_page = max(1, intval($per_page));
+        $offset = ($page - 1) * $per_page;
 
-        if (empty($faqs)) {
-            return [];
-        }
+        // Get total count for pagination
+        $total = $this->wpdb->get_var("SELECT COUNT(*) FROM $faq_table");
 
-        return $this->attach_categories_to_faqs($faqs);
+        // Calculate total pages
+        $total_pages = (int)ceil($total / $per_page);
+
+        // Fetch paginated FAQs
+        $faqs = $this->wpdb->get_results($this->wpdb->prepare(
+            "SELECT * FROM $faq_table LIMIT %d OFFSET %d",
+            $per_page,
+            $offset
+        ));
+
+        // Attach categories to each FAQ
+        $faqs = $this->attach_categories_to_faqs($faqs);
+
+        return [
+            'faqs' => $faqs,
+            'total' => intval($total),
+            'current_page' => $page,
+            'total_pages' => $total_pages,
+        ];
     }
 
     /**
