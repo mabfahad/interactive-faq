@@ -11,9 +11,10 @@
  */
 
 /**
- * Fired during plugin deactivation.
+ * Class responsible for tasks to run during plugin deactivation.
  *
- * This class defines all code necessary to run during the plugin's deactivation.
+ * This class defines all the code necessary to clean up when the plugin is deactivated,
+ * such as removing custom database tables or resetting configurations.
  *
  * @since      1.0.0
  * @package    Ifaq
@@ -23,11 +24,12 @@
 class Ifaq_Deactivator {
 
 	/**
-	 * Short Description. (use period)
+	 * Executes deactivation logic for the plugin.
 	 *
-	 * Long Description.
+	 * Initializes the database handler and deletes plugin-related tables.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
+	 * @return void
 	 */
 	public function deactivate() {
         global $wpdb;
