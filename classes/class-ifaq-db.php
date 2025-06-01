@@ -106,6 +106,36 @@ class Ifaq_DB
     }
 
     /**
+     * Retrieve all FAQs with their category details.
+     *
+     * @return array Array of FAQ objects, each with a 'categories' property containing category objects.
+     */
+    public function get_all_ifaqs()
+    {
+        $faq_table = $this->wpdb->prefix . 'interactive_faq';
+
+        // Get all FAQs
+        $faqs = $this->wpdb->get_results("SELECT * FROM $faq_table");
+
+        if (empty($faqs)) return [];
+
+        // Loop through each FAQ and attach category details
+        foreach ($faqs as $faq) {
+            $category_ids_serialized = $faq->category_ids ?? '';
+            $category_ids = maybe_unserialize($category_ids_serialized);
+
+            if (is_array($category_ids) && !empty($category_ids)) {
+                $faq->categories = $this->get_faq_category_details($category_ids);
+            } else {
+                $faq->categories = [];
+            }
+        }
+
+        return $faqs;
+    }
+
+
+    /**
      * Retrieves detailed information for a single FAQ entry, including its categories.
      *
      * Fetches the FAQ data from the database using the given FAQ ID, and appends
