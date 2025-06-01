@@ -88,6 +88,22 @@ class Ifaq_DB
         }
     }
 
+    /**
+     * Insert a new FAQ entry into the database.
+     *
+     * This method inserts a new row into the interactive_faq table with the provided
+     * question, answer, serialized category IDs, status, and creation timestamp.
+     *
+     * @param array $data {
+     *     Array of FAQ data to insert.
+     *
+     * @type string $question The FAQ question text.
+     * @type string $answer The FAQ answer text.
+     * @type array $category_ids Array of category IDs associated with this FAQ.
+     * @type string $status Status of the FAQ (e.g., 'active', 'inactive').
+     * }
+     * @return bool True on successful insert, false on failure.
+     */
 
     public function insert_interactive_faq($data)
     {
