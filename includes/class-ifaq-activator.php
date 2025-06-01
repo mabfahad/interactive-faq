@@ -32,7 +32,7 @@ class Ifaq_Activator {
 	public function activate() {
         global $wpdb;
         $ifaq_db = new Ifaq_DB($wpdb);
-        $ifaq_db->create_tables_at_installations();
+        $ifaq_db->create_tables_at_activation();
 	}
 
 }
