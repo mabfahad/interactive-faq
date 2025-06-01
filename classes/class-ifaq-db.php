@@ -4,18 +4,11 @@ class Ifaq_DB
 {
     protected $wpdb;
 
-    public function __construct($wpdb)
-    {
-        $this->wpdb = $wpdb;
-    }
+    public function __construct($wpdb) {$this->wpdb = $wpdb;}
 
-    public function create_tables_at_installations() {
-        return $this->create_tables();
-    }
+    public function create_tables_at_installations() {return $this->create_tables();}
 
-    public function delete_tables_at_deactivation() {
-        return $this->deleteTables();
-    }
+    public function delete_tables_at_deactivation() {return $this->deleteTables();}
 
     private function create_tables() {
 
@@ -61,7 +54,6 @@ class Ifaq_DB
             $this->wpdb->query("DROP TABLE IF EXISTS $table");
         }
     }
-
 
     public function insert_interactive_faq($data)
     {
