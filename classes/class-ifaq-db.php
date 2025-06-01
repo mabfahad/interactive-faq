@@ -81,38 +81,38 @@ class Ifaq_DB
      */
     private function deleteTables()
     {
-        //delete table
-        $table_names = ['interactive_faq', 'faq_category', 'faq_category_pivot'];
+        $table_names = ['interactive_faq', 'faq_category'];
         foreach ($table_names as $table_name) {
             $table = $this->wpdb->prefix . $table_name;
             $this->wpdb->query("DROP TABLE IF EXISTS $table");
         }
     }
 
+
     public function insert_interactive_faq($data)
-{
-    $table = $this->wpdb->prefix . 'interactive_faq';
+    {
+        $table = $this->wpdb->prefix . 'interactive_faq';
 
-    $result = $this->wpdb->insert(
-        $table,
-        [
-            'question'    => $data['question'],
-            'answer'      => $data['answer'],
-            'category_ids'=> maybe_serialize($data['category_ids'] ?? []),
-            'status'      => $data['status'],
-            'created_at'  => current_time('mysql'),
-        ],
-        [
-            '%s', // question
-            '%s', // answer
-            '%s', // category_ids (serialized string)
-            '%s', // status
-            '%s', // created_at
-        ]
-    );
+        $result = $this->wpdb->insert(
+            $table,
+            [
+                'question' => $data['question'],
+                'answer' => $data['answer'],
+                'category_ids' => maybe_serialize($data['category_ids'] ?? []),
+                'status' => $data['status'],
+                'created_at' => current_time('mysql'),
+            ],
+            [
+                '%s', // question
+                '%s', // answer
+                '%s', // category_ids (serialized string)
+                '%s', // status
+                '%s', // created_at
+            ]
+        );
 
-    return $result !== false; // returns true on success, false on failure
-}
+        return $result !== false; // returns true on success, false on failure
+    }
 
     /**
      * Retrieve all categories from the FAQ category table.
