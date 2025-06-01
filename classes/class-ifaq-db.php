@@ -4,7 +4,10 @@ class Ifaq_DB
 {
     protected $wpdb;
 
-    public function __construct($wpdb) {$this->wpdb = $wpdb;}
+    public function __construct($wpdb)
+    {
+        $this->wpdb = $wpdb;
+    }
 
     /**
      * Creates necessary database tables during plugin activation.
@@ -14,19 +17,26 @@ class Ifaq_DB
      *
      * @return void
      */
-    public function create_tables_at_activation() {return $this->create_tables();}
+    public function create_tables_at_activation()
+    {
+        return $this->create_tables();
+    }
 
     /**
      *
      * Delete all the tables which were created at the time of plugin activation
      */
-    public function delete_tables_at_deactivation() {return $this->deleteTables();}
+    public function delete_tables_at_deactivation()
+    {
+        return $this->deleteTables();
+    }
 
     /**
      *
      * Create table functions where all the tables create SQL are written
      */
-    private function create_tables() {
+    private function create_tables()
+    {
 
         $charset_collate = $this->wpdb->get_charset_collate();
 
@@ -69,11 +79,12 @@ class Ifaq_DB
      *
      * @return void
      */
-    private function deleteTables() {
+    private function deleteTables()
+    {
         //delete table
-        $table_names = ['interactive_faq','faq_category','faq_category_pivot'];
+        $table_names = ['interactive_faq', 'faq_category', 'faq_category_pivot'];
         foreach ($table_names as $table_name) {
-            $table = $this->wpdb->prefix.$table_name;
+            $table = $this->wpdb->prefix . $table_name;
             $this->wpdb->query("DROP TABLE IF EXISTS $table");
         }
     }
@@ -100,9 +111,10 @@ class Ifaq_DB
      *
      * @return array Array of category objects.
      */
-    public function get_ifaq_all_categories() {
+    public function get_ifaq_all_categories()
+    {
         $category_table = $this->wpdb->prefix . 'faq_category';
-        return $this->wpdb->get_results( " SELECT * FROM $category_table" );
+        return $this->wpdb->get_results(" SELECT * FROM $category_table");
     }
 
     /**
@@ -114,12 +126,23 @@ class Ifaq_DB
     {
         $faq_table = $this->wpdb->prefix . 'interactive_faq';
 
-        // Get all FAQs
         $faqs = $this->wpdb->get_results("SELECT * FROM $faq_table");
 
-        if (empty($faqs)) return [];
+        if (empty($faqs)) {
+            return [];
+        }
 
-        // Loop through each FAQ and attach category details
+        return $this->attach_categories_to_faqs($faqs);
+    }
+
+    /**
+     * Attach category details to each FAQ object.
+     *
+     * @param array $faqs Array of FAQ objects.
+     * @return array FAQ objects with 'categories' property added.
+     */
+    private function attach_categories_to_faqs(array $faqs)
+    {
         foreach ($faqs as $faq) {
             $category_ids_serialized = $faq->category_ids ?? '';
             $category_ids = maybe_unserialize($category_ids_serialized);
@@ -130,10 +153,8 @@ class Ifaq_DB
                 $faq->categories = [];
             }
         }
-
         return $faqs;
     }
-
 
     /**
      * Retrieves detailed information for a single FAQ entry, including its categories.
@@ -144,14 +165,15 @@ class Ifaq_DB
      * @param int $faq_id The ID of the FAQ to retrieve.
      * @return object|null The FAQ object with an added 'categories' property, or null if not found.
      */
-    public function get_single_faq_details($faq_id) {
-        $faq_table      = $this->wpdb->prefix . 'interactive_faq';
+    public function get_single_faq_details($faq_id)
+    {
+        $faq_table = $this->wpdb->prefix . 'interactive_faq';
 
         //Get the details for the given FAQ
-        $faq = $this->wpdb->get_row( $this->wpdb->prepare(
+        $faq = $this->wpdb->get_row($this->wpdb->prepare(
             "SELECT * FROM $faq_table WHERE id = %d",
             $faq_id
-        ) );
+        ));
         $faq->categories = $this->get_ifaq_all_categories_by_faq_id($faq_id);
         return $faq;
     }
@@ -165,14 +187,15 @@ class Ifaq_DB
      * @param int $faq_id The ID of the FAQ.
      * @return string|null The serialized category IDs, or null if not found.
      */
-    private function get_serialized_categories_with_faq_id($faq_id) {
-        $faq_table      = $this->wpdb->prefix . 'interactive_faq';
+    private function get_serialized_categories_with_faq_id($faq_id)
+    {
+        $faq_table = $this->wpdb->prefix . 'interactive_faq';
 
         //Get the serialized category_ids for the given FAQ
-        return $this->wpdb->get_var( $this->wpdb->prepare(
+        return $this->wpdb->get_var($this->wpdb->prepare(
             "SELECT category_ids FROM $faq_table WHERE id = %d",
             $faq_id
-        ) );
+        ));
     }
 
     /**
@@ -184,13 +207,14 @@ class Ifaq_DB
      * @param int $faq_id The ID of the FAQ.
      * @return array Array of category objects, or an empty array if none are found.
      */
-    private function get_ifaq_all_categories_by_faq_id($faq_id) {
+    private function get_ifaq_all_categories_by_faq_id($faq_id)
+    {
         $category_ids_serialized = $this->get_serialized_categories_with_faq_id($faq_id);
 
         //Unserialize safely
-        $category_ids = maybe_unserialize( $category_ids_serialized );
+        $category_ids = maybe_unserialize($category_ids_serialized);
 
-        if ( ! is_array( $category_ids ) || empty( $category_ids ) ) {
+        if (!is_array($category_ids) || empty($category_ids)) {
             return []; // No categories found
         }
 
@@ -206,18 +230,19 @@ class Ifaq_DB
      * @param array $category_ids An array of category IDs.
      * @return array Array of category objects.
      */
-    private function get_faq_category_details($category_ids) {
+    private function get_faq_category_details($category_ids)
+    {
         $category_table = $this->wpdb->prefix . 'faq_category';
 
         //Sanitize and prepare SQL
-        $category_ids = array_map( 'intval', $category_ids );
-        $placeholders = implode( ',', array_fill( 0, count( $category_ids ), '%d' ) );
+        $category_ids = array_map('intval', $category_ids);
+        $placeholders = implode(',', array_fill(0, count($category_ids), '%d'));
 
         //Fetch matching categories
         $query = $this->wpdb->prepare(
             "SELECT * FROM $category_table WHERE id IN ($placeholders)",
             ...$category_ids
         );
-        return $this->wpdb->get_results( $query );
+        return $this->wpdb->get_results($query);
     }
 }
