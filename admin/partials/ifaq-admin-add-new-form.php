@@ -1,3 +1,8 @@
+<?php
+    global $wpdb;
+    $ifaq_db = new Ifaq_DB($wpdb);
+    $all_categories = $ifaq_db->get_ifaq_all_categories();
+?>
 <div class="ifaq-container">
     <h1>Add New FAQ</h1>
 
@@ -17,11 +22,17 @@
         </div>
 
         <div class="ifaq-form-row">
-            <label for="ifaq_category">Category<span class="ifaq_required">*</span> </label>
+            <label>Category<span class="ifaq_required">*</span></label>
             <div class="input-field">
-                <input type="text" id="ifaq_category" value="General"/>
+                <?php foreach ($all_categories as $category) : ?>
+                    <label>
+                        <input type="checkbox" name="ifaq_category[]" value="<?php echo esc_attr($category->id); ?>">
+                        <?php echo esc_html(__($category->title)); ?>
+                    </label><br>
+                <?php endforeach; ?>
             </div>
         </div>
+
 
         <div class="ifaq-form-row">
             <label for="ifaq_status">Status</label>
