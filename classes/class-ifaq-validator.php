@@ -9,40 +9,36 @@ trait Ifaq_Validator {
      * @return array|WP_Error Sanitized data array or WP_Error.
      */
     public function validate_faq_data(array $data) {
-        $question_raw = $data['question'] ?? '';
-        $answer_raw   = $data['answer'] ?? '';
-        $category_raw = $data['category'] ?? '';
-        $status_raw   = $data['status'] ?? '';
-
         // Sanitize inputs
-        $question = sanitize_textarea_field($question_raw);
-        $answer   = wp_kses_post($answer_raw);
-        $category = sanitize_text_field($category_raw);
-        $status   = sanitize_key($status_raw);
+        $question   = sanitize_textarea_field($data['question']);
+        $answer     = wp_kses_post($data['answer']);
+        $categories = is_array($data['categories']) ? array_map('sanitize_text_field', $data['categories']) : [];
+        $status     = sanitize_key($data['status']);
 
         // Validate required fields
+        $errors = [];
         if (empty($question)) {
-            return new WP_Error('invalid_question', 'Question is required.');
+            $errors[] =['question'];
         }
 
         if (empty($answer)) {
-            return new WP_Error('invalid_answer', 'Answer is required.');
+            $errors[] =['answer'];
+        }
+
+        if (empty($categories)) {
+            $errors[] =['categories'];
         }
 
         if (!in_array($status, ['active', 'deactive'], true)) {
-            return new WP_Error('invalid_status', 'Invalid status value.');
-        }
-
-        // Optional: field length checks
-        if (strlen($question) > 300) {
-            return new WP_Error('question_too_long', 'Question must be under 300 characters.');
+            $errors[] =['status'];
         }
 
         return [
-            'question'  => $question,
-            'answer'    => $answer,
-            'category'  => $category,
-            'status'    => $status,
+            'errors'     => $errors,
+            'question'   => $question,
+            'answer'     => $answer,
+            'categories' => $categories,
+            'status'     => $status,
         ];
     }
 }

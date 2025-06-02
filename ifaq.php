@@ -71,8 +71,9 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-ifaq.php';
  * Require all the classes
  */
 
-require_once plugin_dir_path(__FILE__).'classes/Ifaq_Ajax.php';
 require_once plugin_dir_path(__FILE__).'classes/class-ifaq-db.php';
+require_once plugin_dir_path(__FILE__).'classes/class-ifaq-validator.php';
+require_once plugin_dir_path(__FILE__).'classes/class-ifaq-ajax.php';
 
 /**
  * Begins execution of the plugin.

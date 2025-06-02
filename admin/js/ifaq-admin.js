@@ -12,7 +12,7 @@
 
 	$(document).ready(function($) {
 
-		// Toggle FAQ answer visibility when question is clicked
+		// Toggle FAQ answer visibility
 		$('.ifaq-question').on('click', function () {
 			var $answer = $(this).next('.ifaq-answer');
 			$(this).toggleClass('active');
@@ -23,29 +23,36 @@
 		$("#ifaq-add-new-form button").on('click', function (e) {
 			e.preventDefault();
 
-			const ifaq_question = $("#ifaq_question").val(); // Get question
-			const ifaq_answer = $("#ifaq_answer").val();     // Get answer
-			const ifaq_category = $("#ifaq_category").val(); // Get category (fixed selector)
-			const ifaq_status = $("#ifaq_status").val();     // Get status
+			const ifaqQuestion = $("#ifaq_question").val().trim();
+			const ifaqAnswer = $("#ifaq_answer").val().trim();
+			const ifaqCategories = $('input[name="ifaq_category[]"]:checked').get().map(el => el.value);
+			const ifaqStatus = $("#ifaq_status").val();
 
+			// Submit via AJAX
 			$.ajax({
 				url: ifaq_ajax.ajax_url,
 				method: 'post',
 				data: {
 					action: 'save_ifaq_new',
-					question: ifaq_question,
-					answer: ifaq_answer,
-					ifaq_category: ifaq_category,
-					ifaq_status: ifaq_status,
+					ifaqQuestion: ifaqQuestion,
+					ifaqAnswer: ifaqAnswer,
+					ifaqCategories: ifaqCategories,
+					ifaqStatus: ifaqStatus,
 					nonce: ifaq_ajax.ifaq_nonce,
 				},
 				success: function (response) {
-					console.log('FAQ saved:', response);
-					// Optionally show success message or reset form
-				},
-				error: function () {
-					console.error('Error saving FAQ.');
-					// Optionally show error message
+					if (response.status === 201) {
+						// Optionally show success message
+						alert(response.message);
+
+						// Reset form fields
+						$("#ifaq_question").val('');
+						$("#ifaq_answer").val('');
+						$('input[name="ifaq_category[]"]').prop('checked', false);
+						$("#ifaq_status").val('Active');
+					} else {
+						alert('Something went wrong.'); // Fallback
+					}
 				}
 			});
 		});
