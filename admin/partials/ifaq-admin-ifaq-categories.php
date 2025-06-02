@@ -1,39 +1,24 @@
 <?php
 global $wpdb;
 $category_table = $wpdb->prefix . 'faq_category';
+$ifaq_db = new Ifaq_DB($wpdb);
 
 // Handle Add/Edit
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_title'])) {
     $title = sanitize_text_field($_POST['category_title']);
     $slug = sanitize_title($_POST['category_slug']);
     $id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
-
-    // Auto-generate slug if empty
-    if (empty($slug)) {
-        $slug = sanitize_title($title);
-    }
-
+    $data = ['title'=>$title,'slug'=>$slug];
     // Check if we're updating or inserting
     if ($id > 0) {
-        $wpdb->update(
-            $category_table,
-            ['title' => $title, 'slug' => $slug],
-            ['id' => $id],
-            ['%s', '%s'],
-            ['%d']
-        );
+        $ifaq_db->update_faq_category($data);
         echo '<div class="notice notice-success"><p>Category updated successfully.</p></div>';
     } else {
-        $wpdb->insert(
-            $category_table,
-            ['title' => $title, 'slug' => $slug],
-            ['%s', '%s']
-        );
+        $ifaq_db->insert_faq_category($data);
         echo '<div class="notice notice-success"><p>Category added successfully.</p></div>';
     }
 }
 
-$ifaq_db = new Ifaq_DB($wpdb);
 $categories = $ifaq_db->get_ifaq_all_categories();
 
 // Handle Edit - Pre-fill form

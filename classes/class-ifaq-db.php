@@ -328,20 +328,71 @@ class Ifaq_DB
         return $this->wpdb->get_results($query);
     }
 
-    public function insert_faq_category($title) {
-        $raw_slug = sanitize_title($title);
+    /**
+     * Inserts a new FAQ category into the database.
+     *
+     * Automatically generates a unique slug if not provided or if a duplicate exists.
+     *
+     * @param array $data Associative array with keys: 'title' and optionally 'slug'.
+     * @return bool True if insertion was successful, false on failure.
+     */
+    public function insert_faq_category($data) {
+        // Auto-generate slug if empty
+        $raw_slug = empty($data['slug']) ? sanitize_title($data['title']) : sanitize_title($data['slug']);
         $slug = $this->generate_unique_slug($raw_slug);
 
-        $this->wpdb->insert(
+        $result = $this->wpdb->insert(
             $this->wpdb->prefix . 'faq_category',
             [
-                'title'      => sanitize_text_field($title),
+                'title'      => sanitize_text_field($data['title']),
                 'slug'       => $slug,
                 'created_at' => current_time('mysql'),
             ]
         );
+
+        return $result !== false;
     }
 
+    /**
+     * Updates an existing FAQ category in the database.
+     *
+     * Automatically generates a unique slug if not provided or if a duplicate exists,
+     * excluding the current category ID from the uniqueness check.
+     *
+     * @param array $data Associative array with keys: 'id', 'title', and optionally 'slug'.
+     * @return bool True if the update was successful, false otherwise.
+     */
+    public function update_faq_category($data) {
+        // Auto-generate slug if empty
+        $raw_slug = empty($data['slug']) ? sanitize_title($data['title']) : sanitize_title($data['slug']);
+        $slug = $this->generate_unique_slug($raw_slug, $data['id']); // optional: pass ID to exclude current row from uniqueness check
+
+        $result = $this->wpdb->update(
+            $this->wpdb->prefix . 'faq_category',
+            [
+                'title' => sanitize_text_field($data['title']),
+                'slug'  => $slug,
+            ],
+            [
+                'id' => intval($data['id']),
+            ]
+        );
+
+        return $result !== false;
+    }
+
+    /**
+     * Generates a unique slug for a FAQ category.
+     *
+     * If the provided slug already exists in the database, this method will append
+     * an incrementing number (e.g., 'slug', 'slug-1', 'slug-2', etc.) until a unique slug is found.
+     * It can optionally exclude a specific category ID when checking for duplicates,
+     * which is useful during updates.
+     *
+     * @param string $base_slug   The initial slug (typically from the title or user input).
+     * @param int|null $exclude_id Optional. ID of a category to exclude from the uniqueness check.
+     * @return string A unique, sanitized slug.
+     */
     private function generate_unique_slug($base_slug, $exclude_id = null) {
         $category_table = $this->wpdb->prefix . 'faq_category';
         $slug = $base_slug;
