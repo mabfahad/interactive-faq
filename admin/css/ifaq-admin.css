@@ -264,3 +264,14 @@ interactive faq lists
     color: #fff;
     border-color: #0073aa;
 }
+.ifaq-admin-categories{
+    display:flex;
+    flex-direction:row;
+    gap: 30px;
+}
+.add_category{
+    flex:1;
+}
+.all_categories{
+    flex:2;
+}

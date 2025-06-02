@@ -126,6 +126,16 @@ class Ifaq_Admin {
             [$this, 'render_ifaq_admin_add_new'] // Callback method
         );
 
+        // Add "FAQ Categories" submenu under "Interactive FAQ"
+        add_submenu_page(
+            'interactive-faq', // Parent slug (must match the menu slug above)
+            'FAQ Categories',   // Page title
+            'FAQ Categories',       // Submenu label
+            'manage_options',
+            'ifaq-categories',  // Submenu slug
+            [$this, 'render_ifaq_admin_ifaq_categories'] // Callback method
+        );
+
         // Add "Add New" submenu under "Interactive FAQ"
         add_submenu_page(
             'interactive-faq', // Parent slug (must match the menu slug above)
@@ -144,6 +154,10 @@ class Ifaq_Admin {
 
     public function render_ifaq_admin_add_new() {
         require_once IFAQ_PLUGIN_DIR.'/admin/partials/ifaq-admin-add-new-form.php';
+    }
+
+    public function render_ifaq_admin_ifaq_categories() {
+        require_once IFAQ_PLUGIN_DIR.'/admin/partials/ifaq-admin-ifaq-categories.php';
     }
 
     public function ifaq_settings() {
