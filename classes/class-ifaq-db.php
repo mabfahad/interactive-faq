@@ -179,6 +179,45 @@ class Ifaq_DB
     }
 
     /**
+     * Update an existing FAQ entry by ID.
+     *
+     * Updates the question, answer, serialized category IDs, status, and order number.
+     *
+     * @param int $faq_id The ID of the FAQ to update.
+     * @param array $data Associative array of fields to update:
+     *                      - 'question' => (string) FAQ question text.
+     *                      - 'answer' => (string) FAQ answer text.
+     *                      - 'category_ids' => (array) Array of category IDs.
+     *                      - 'status' => (string) FAQ status.
+     *                      - 'order_num' => (int) Optional order number.
+     * @return bool True on success, false on failure.
+     */
+    public function update_interactive_faq($faq_id, $data)
+    {
+        $faq_table = $this->wpdb->prefix . 'interactive_faq';
+
+        // Prepare data array for update
+        $update_data = [
+            'question' => $data['question'] ?? '',
+            'answer' => $data['answer'] ?? '',
+            // Serialize category IDs array before saving
+            'category_ids' => isset($data['category_ids']) ? maybe_serialize($data['category_ids']) : '',
+            'status' => $data['status'] ?? 'active',
+            'order_num' => isset($data['order_num']) ? intval($data['order_num']) : 0,
+        ];
+
+        // Prepare format array (all strings except order_num is int)
+        $format = ['%s', '%s', '%s', '%s', '%d'];
+
+        $where = ['id' => intval($faq_id)];
+        $where_format = ['%d'];
+
+        $updated = $this->wpdb->update($faq_table, $update_data, $where, $format, $where_format);
+
+        return ($updated !== false);
+    }
+
+    /**
      * Attach category details to each FAQ object.
      *
      * @param array $faqs Array of FAQ objects.
