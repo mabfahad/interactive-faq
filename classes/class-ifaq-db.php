@@ -312,7 +312,7 @@ class Ifaq_DB
      * @param array $category_ids An array of category IDs.
      * @return array Array of category objects.
      */
-    private function get_faq_category_details($category_ids)
+    public function get_faq_category_details($category_ids)
     {
         $category_table = $this->wpdb->prefix . 'faq_category';
 
@@ -327,4 +327,47 @@ class Ifaq_DB
         );
         return $this->wpdb->get_results($query);
     }
+
+    public function insert_faq_category($title) {
+        $raw_slug = sanitize_title($title);
+        $slug = $this->generate_unique_slug($raw_slug);
+
+        $this->wpdb->insert(
+            $this->wpdb->prefix . 'faq_category',
+            [
+                'title'      => sanitize_text_field($title),
+                'slug'       => $slug,
+                'created_at' => current_time('mysql'),
+            ]
+        );
+    }
+
+    private function generate_unique_slug($base_slug, $exclude_id = null) {
+        $category_table = $this->wpdb->prefix . 'faq_category';
+        $slug = $base_slug;
+        $i = 1;
+
+        while (true) {
+            $query = "SELECT COUNT(*) FROM $category_table WHERE slug = %s";
+            $params = [$slug];
+
+            if ($exclude_id !== null) {
+                $query .= " AND id != %d";
+                $params[] = $exclude_id;
+            }
+
+            $exists = $this->wpdb->get_var($this->wpdb->prepare($query, ...$params));
+
+            if ($exists == 0) {
+                break;
+            }
+
+            $slug = $base_slug . '-' . $i;
+            $i++;
+        }
+
+        return $slug;
+    }
+
+
 }

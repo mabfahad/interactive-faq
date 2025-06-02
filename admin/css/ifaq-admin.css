@@ -275,3 +275,6 @@ interactive faq lists
 .all_categories{
     flex:2;
 }
+.text-danger {
+    color: #dc3545;
+}
