@@ -6,16 +6,21 @@ $ifaq_db = new Ifaq_DB($wpdb);
 // Handle Add/Edit
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_title'])) {
     $title = sanitize_text_field($_POST['category_title']);
-    $slug = sanitize_title($_POST['category_slug']);
-    $id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
-    $data = ['title'=>$title,'slug'=>$slug];
-    // Check if we're updating or inserting
-    if ($id > 0) {
-        $ifaq_db->update_faq_category($data);
-        echo '<div class="notice notice-success"><p>Category updated successfully.</p></div>';
+    if (empty($title)) {
+        // Display admin notice
+        echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> Category title is required.</p></div>';
     } else {
-        $ifaq_db->insert_faq_category($data);
-        echo '<div class="notice notice-success"><p>Category added successfully.</p></div>';
+        $slug = sanitize_title($_POST['category_slug']);
+        $id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
+        $data = ['title'=>$title,'slug'=>$slug];
+        // Check if we're updating or inserting
+        if ($id > 0) {
+            $ifaq_db->update_faq_category($data);
+            echo '<div class="notice notice-success"><p>Category updated successfully.</p></div>';
+        } else {
+            $ifaq_db->insert_faq_category($data);
+            echo '<div class="notice notice-success"><p>Category added successfully.</p></div>';
+        }
     }
 }
 
