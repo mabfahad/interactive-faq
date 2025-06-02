@@ -2,50 +2,35 @@
 	'use strict';
 
 	/**
-	 * All of the code for your admin-facing JavaScript source
-	 * should reside in this file.
+	 * This file handles all admin-facing JavaScript functionality for the plugin.
 	 *
-	 * Note: It has been assumed you will write jQuery code here, so the
-	 * $ function reference has been prepared for usage within the scope
-	 * of this function.
+	 * The $ alias is safely scoped via the IIFE, so jQuery can be used without conflicts.
 	 *
-	 * This enables you to define handlers, for when the DOM is ready:
-	 *
-	 * $(function() {
-	 *
-	 * });
-	 *
-	 * When the window is loaded:
-	 *
-	 * $( window ).load(function() {
-	 *
-	 * });
-	 *
-	 * ...and/or other possibilities.
-	 *
-	 * Ideally, it is not considered best practise to attach more than a
-	 * single DOM-ready or window-load handler for a particular page.
-	 * Although scripts in the WordPress core, Plugins and Themes may be
-	 * practising this, we should strive to set a better example in our own work.
+	 * DOM-ready events, click handlers, and AJAX requests related to admin interactions
+	 * should be defined here.
 	 */
 
-    $(document).ready(function($) {
-        $('.ifaq-question').on('click', function () {
-            var $answer = $(this).next('.ifaq-answer');
-            $(this).toggleClass('active');
-            $answer.slideToggle(200);
-        });
+	$(document).ready(function($) {
 
+		// Toggle FAQ answer visibility when question is clicked
+		$('.ifaq-question').on('click', function () {
+			var $answer = $(this).next('.ifaq-answer');
+			$(this).toggleClass('active');
+			$answer.slideToggle(200);
+		});
+
+		// Handle FAQ form submission via AJAX
 		$("#ifaq-add-new-form button").on('click', function (e) {
 			e.preventDefault();
-			const ifaq_question = $("#ifaq_question").val(); // get textarea value
-			const ifaq_answer = $("#ifaq_answer").val(); // get textarea value
-			const ifaq_category = $("ifaq_category").val();
-			const ifaq_status = $("#ifaq_status").val();
+
+			const ifaq_question = $("#ifaq_question").val(); // Get question
+			const ifaq_answer = $("#ifaq_answer").val();     // Get answer
+			const ifaq_category = $("#ifaq_category").val(); // Get category (fixed selector)
+			const ifaq_status = $("#ifaq_status").val();     // Get status
 
 			$.ajax({
 				url: ifaq_ajax.ajax_url,
-				method:'post',
+				method: 'post',
 				data: {
 					action: 'save_ifaq_new',
 					question: ifaq_question,
@@ -55,13 +40,15 @@
 					nonce: ifaq_ajax.ifaq_nonce,
 				},
 				success: function (response) {
-					console.log(response);
+					console.log('FAQ saved:', response);
+					// Optionally show success message or reset form
 				},
 				error: function () {
-
+					console.error('Error saving FAQ.');
+					// Optionally show error message
 				}
 			});
 		});
-    });
+	});
 
 })( jQuery );
