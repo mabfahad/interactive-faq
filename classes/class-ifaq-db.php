@@ -192,7 +192,7 @@ class Ifaq_DB
      *                      - 'order_num' => (int) Optional order number.
      * @return bool True on success, false on failure.
      */
-    public function update_interactive_faq($faq_id, $data)
+    public function update_ifaq($faq_id, $data)
     {
         $faq_table = $this->wpdb->prefix . 'interactive_faq';
 
