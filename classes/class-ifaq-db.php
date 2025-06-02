@@ -105,7 +105,7 @@ class Ifaq_DB
      * @return bool True on successful insert, false on failure.
      */
 
-    public function insert_interactive_faq($data)
+    public function insert_ifaq($data)
     {
         $table = $this->wpdb->prefix . 'interactive_faq';
 
