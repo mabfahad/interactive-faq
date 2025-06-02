@@ -28,6 +28,13 @@
                 <input type="number" id="ifaq-limit" value="10" min="1" />
             </div>
         </div>
+
+        <div class="ifaq-form-row">
+            <label for="enable-ifaq-cat">Enable Categories</label>
+            <div class="input-field">
+                <input type="checkbox" id="enable-ifaq-cat" />
+            </div>
+        </div>
     </div>
 
     <h2>Customization</h2>
@@ -40,7 +47,7 @@
         </div>
 
         <div class="ifaq-form-row">
-            <label for="font-style">Font Style</label>
+            <label for="font-style">Font Family</label>
             <div class="input-field">
                 <select id="font-style">
                     <option>Arial</option>
