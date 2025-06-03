@@ -79,6 +79,62 @@
             $("#ifaq-message").fadeOut();
         });
 
+        //Handle all the settings
+        $('.ifaq-sattings-save').on('click', function (e) {
+            e.preventDefault();
+            $("#ifaq-loader").show();
+
+            const settingsData = {
+                displayStyle: $('#display-style').val(),
+                showSearchBox: $('#search-box').is(':checked'),
+                faqsPerPage: parseInt($('#ifaq-limit').val(), 10),
+                enableCategories: $('#enable-ifaq-cat').is(':checked'),
+                colorScheme: $('#color-scheme').val(),
+                fontStyle: $('#font-style').val(),
+                iconStyle: $('#icon-style').val()
+            };
+
+            $.ajax({
+                url: ifaq_ajax.ajax_url,
+                method: 'post',
+                data: {
+                    action: 'save_ifaq_settings',
+                    settingsData:settingsData,
+                    nonce: ifaq_ajax.ifaq_nonce,
+                },
+                success: function (response) {
+                    $("#ifaq-loader").hide();
+
+                    const isError = response.success === false;
+                    const messageText = response.message;
+
+                    $("#ifaq-message")
+                        .removeClass('success error')
+                        .addClass(isError ? 'error' : 'success')
+                        .html('<span class="ifaq-close" style="float:right; cursor:pointer;">&times;</span><span class="ifaq-message-text">' + messageText + '</span>')
+                        .fadeIn();
+
+                    setTimeout(() => {
+                        $("#ifaq-message").fadeOut();
+                    }, 3000);
+                },
+                error: function (xhr, status, error) {
+                    $("#ifaq-loader").hide();
+
+                    $("#ifaq-message")
+                        .removeClass('success')
+                        .addClass('error')
+                        .html('<span class="ifaq-close" style="float:right; cursor:pointer;">&times;</span><span class="ifaq-message-text">An unexpected error occurred. Please try again.</span>')
+                        .fadeIn();
+
+                    setTimeout(() => {
+                        $("#ifaq-message").fadeOut();
+                    }, 3000);
+                }
+            });
+        });
+
+
     });
 
 })(jQuery);

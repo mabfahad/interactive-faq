@@ -3,39 +3,81 @@
 class Ifaq_Ajax
 {
     use Ifaq_Validator;
-    function __construct() {
-        add_action('wp_ajax_save_ifaq_new',[$this,'save_ifaq_new']);
+
+    public function __construct()
+    {
+        // Register AJAX handlers
+        add_action('wp_ajax_save_ifaq_new', [$this, 'save_ifaq_new']);
+        add_action('wp_ajax_save_ifaq_settings', [$this, 'save_ifaq_settings']);
     }
 
-    public function save_ifaq_new() {
-        check_ajax_referer('ifaq_nonce_action', 'nonce');
+    /**
+     * Handle AJAX request to save a new FAQ
+     */
+    public function save_ifaq_new()
+    {
+        $this->verify_nonce('ifaq_nonce_action', 'nonce');
 
-        $question   = sanitize_text_field($_POST['ifaqQuestion'] ?? '');
-        $answer     = wp_kses_post($_POST['ifaqAnswer'] ?? '');
-        $categories = array_map('intval', $_POST['ifaqCategories'] ?? []);
-        $status     = sanitize_text_field($_POST['ifaqStatus'] ?? 'Active');
-
-        $inserted_data = [
-            'question'      => $question,
-            'answer'        => $answer,
-            'categories'    => $categories,
-            'status'        => $status
+        $data = [
+            'question'   => sanitize_text_field($_POST['ifaqQuestion'] ?? ''),
+            'answer'     => wp_kses_post($_POST['ifaqAnswer'] ?? ''),
+            'categories' => array_map('intval', $_POST['ifaqCategories'] ?? []),
+            'status'     => sanitize_text_field($_POST['ifaqStatus'] ?? 'Active')
         ];
 
-        $validated = $this->validate_faq_data($inserted_data);
+        $validation = $this->validate_faq_data($data);
 
-        if (!empty($validated['errors'])) {
-            wp_send_json(['success'=>false,'message'=>'required fields are missing','data'=>$validated['errors']]);
-            exit();
+        if (!empty($validation['errors'])) {
+            return $this->send_json(false, 'Required fields are missing', $validation['errors']);
         }
 
         global $wpdb;
-        $ifaq_db = new Ifaq_DB($wpdb);
-        $ifaq_db->insert_ifaq($inserted_data);
+        (new Ifaq_DB($wpdb))->insert_ifaq($data);
 
-        wp_send_json(['success'=>true,'message'=>'Successfully added','data'=>$validated]);
+        $this->send_json(true, 'Successfully added', $validation);
+    }
 
+    /**
+     * Handle AJAX request to save plugin settings
+     */
+    public function save_ifaq_settings()
+    {
+        $this->verify_nonce('ifaq_nonce_action', 'nonce');
+
+        $settings = maybe_serialize($_POST['settingsData']);
+
+        update_option('ifaq_settings', $settings);
+
+        $this->send_json(true, 'Settings saved successfully');
+    }
+
+    /**
+     * Verify nonce or send error response
+     */
+    private function verify_nonce(string $action, string $name)
+    {
+        if (!check_ajax_referer($action, $name, false)) {
+            $this->send_json(false, 'Invalid or expired nonce');
+        }
+    }
+
+    /**
+     * Send standardized JSON response
+     */
+    private function send_json(bool $success, string $message, $data = null)
+    {
+        $response = [
+            'success' => $success,
+            'message' => $message,
+        ];
+
+        if (!is_null($data)) {
+            $response['data'] = $data;
+        }
+
+        wp_send_json($response);
         wp_die();
     }
 }
+
 new Ifaq_Ajax();

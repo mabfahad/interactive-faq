@@ -18,21 +18,21 @@
         <div class="ifaq-form-row">
             <label for="search-box">Show Search Box</label>
             <div class="input-field">
-                <input type="checkbox" id="search-box" />
+                <input type="checkbox" id="search-box"/>
             </div>
         </div>
 
         <div class="ifaq-form-row">
             <label for="ifaq-limit">FAQs per Page</label>
             <div class="input-field">
-                <input type="number" id="ifaq-limit" value="10" min="1" />
+                <input type="number" id="ifaq-limit" value="10" min="1"/>
             </div>
         </div>
 
         <div class="ifaq-form-row">
             <label for="enable-ifaq-cat">Enable Categories</label>
             <div class="input-field">
-                <input type="checkbox" id="enable-ifaq-cat" />
+                <input type="checkbox" id="enable-ifaq-cat"/>
             </div>
         </div>
     </div>
@@ -42,7 +42,7 @@
         <div class="ifaq-form-row">
             <label for="color-scheme">Color Scheme</label>
             <div class="input-field">
-                <input type="color" id="color-scheme" value="#007bff" />
+                <input type="color" id="color-scheme" value="#007bff"/>
             </div>
         </div>
 
@@ -70,7 +70,14 @@
     </div>
 
     <div class="form-actions">
-        <button class="button button-primary">Save Changes</button>
+        <button class="button button-primary ifaq-sattings-save">Save Changes</button>
         <button class="button button-secondary">Reset to Default</button>
+    </div>
+    <div id="ifaq-loader" style="display:none; text-align:center; margin-top:10px;">
+        <span class="spinner is-active"></span> Saving FAQ...
+    </div>
+    <div id="ifaq-message" style="display:none; margin-top:10px; position:relative;">
+        <span class="ifaq-close" style="position:absolute; right:10px; top:8px; cursor:pointer;">&times;</span>
+        <span class="ifaq-message-text"></span>
     </div>
 </div>
