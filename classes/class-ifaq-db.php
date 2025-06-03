@@ -114,6 +114,7 @@ class Ifaq_DB
             [
                 'question' => $data['question'],
                 'answer' => $data['answer'],
+                'order_num' => $data['order_num'],
                 'category_ids' => maybe_serialize($data['categories'] ?? []),
                 'status' => $data['status'],
                 'created_at' => current_time('mysql'),
@@ -200,6 +201,7 @@ class Ifaq_DB
         $update_data = [
             'question' => $data['question'] ?? '',
             'answer' => $data['answer'] ?? '',
+            'order_num' => $data['order_num'] ?? '',
             // Serialize category IDs array before saving
             'category_ids' => isset($data['categories']) ? maybe_serialize($data['categories']) : '',
             'status' => $data['status'] ?? 'active',

@@ -17,12 +17,13 @@
             $("#ifaq-loader").show();
             $("#ifaq-message").hide().removeClass('success error').html('');
 
-            const ifaqQuestion = $("#ifaq_question").val().trim();
-            const ifaqAnswer = $("#ifaq_answer").val().trim();
-            const ifaqCategories = $('input[name="ifaq_category[]"]:checked').get().map(el => el.value);
-            const ifaqStatus = $("#ifaq_status").val();
-            const isEdit = $(this).attr('data-attribute-action');
-            const faq_id = $(this).attr('data-attribute-id');
+            const ifaqQuestion          = $("#ifaq_question").val().trim();
+            const ifaqAnswer            = $("#ifaq_answer").val().trim();
+            const ifaqCategories        = $('input[name="ifaq_category[]"]:checked').get().map(el => el.value);
+            const ifaqStatus            = $("#ifaq_status").val();
+            const ifaqOrderNumber       = $("#ifaq_order_number").val();
+            const isEdit                = $(this).attr('data-attribute-action');
+            const faq_id                = $(this).attr('data-attribute-id');
 
             $.ajax({
                 url: ifaq_ajax.ajax_url,
@@ -32,6 +33,7 @@
                     ifaqQuestion,
                     ifaqAnswer,
                     ifaqCategories,
+                    ifaqOrderNumber,
                     ifaqStatus,
                     isEdit,
                     faq_id,

@@ -58,6 +58,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'
             </div>
 
             <div class="ifaq-form-row">
+                <label for="ifaq_order_number">Order Number<span class="ifaq_required">*</span></label>
+                <div class="input-field">
+                    <input type="number" name="ifaq_order_number" id="ifaq_order_number" required value="<?php echo $edit_faq ? $edit_faq->order_num : 0; ?>">
+                </div>
+            </div>
+
+            <div class="ifaq-form-row">
                 <label for="ifaq_status">Status</label>
                 <div class="input-field">
                     <select id="ifaq_status" name="ifaq_status">

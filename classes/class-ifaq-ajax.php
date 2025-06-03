@@ -17,14 +17,15 @@ class Ifaq_Ajax
     public function save_ifaq_new()
     {
         $this->verify_nonce('ifaq_nonce_action', 'nonce');
-//        echo "<pre>";print_r($_POST);echo "</pre>";exit();
+
         $data = [
-            'question'   => sanitize_text_field($_POST['ifaqQuestion'] ?? ''),
-            'answer'     => wp_kses_post($_POST['ifaqAnswer'] ?? ''),
-            'categories' => array_map('intval', $_POST['ifaqCategories'] ?? []),
-            'status'     => sanitize_text_field($_POST['ifaqStatus'] ?? 'Active'),
-            'isEdit'     => isset($_POST['isEdit']) && $_POST['isEdit'] == '1' ? 1 : 0,
-            'faq_id'     => isset($_POST['faq_id']) ? intval($_POST['faq_id']) : 0,
+            'question'      => sanitize_text_field($_POST['ifaqQuestion'] ?? ''),
+            'answer'        => wp_kses_post($_POST['ifaqAnswer'] ?? ''),
+            'categories'    => array_map('intval', $_POST['ifaqCategories'] ?? []),
+            'order_num'     => intval($_POST['ifaqOrderNumber'] ?? 0),
+            'status'        => sanitize_text_field($_POST['ifaqStatus'] ?? 'Active'),
+            'isEdit'        => isset($_POST['isEdit']) && $_POST['isEdit'] == '1' ? 1 : 0,
+            'faq_id'        => isset($_POST['faq_id']) ? intval($_POST['faq_id']) : 0,
         ];
 
         $validation = $this->validate_faq_data($data);
