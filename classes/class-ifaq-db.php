@@ -158,8 +158,7 @@ class Ifaq_DB
     public function get_ifaq_all_categories()
     {
         global $wpdb;
-        $category_table = $wpdb->prefix . 'faq_category';
-        return $wpdb->get_results($wpdb->prepare(" SELECT * FROM `$category_table`"));
+        return $wpdb->get_results(" SELECT * FROM $wpdb->prefix . 'faq_category'");
     }
 
     /**
@@ -170,24 +169,21 @@ class Ifaq_DB
     public function get_all_ifaqs($page = 1, $per_page = 10)
     {
         global $wpdb;
-        $faq_table = $wpdb->prefix . 'interactive_faq';
-        $wpdb = $wpdb;
 
         $page = max(1, intval($page));
         $per_page = max(1, intval($per_page));
         $offset = ($page - 1) * $per_page;
 
         // Get total count for pagination (no placeholders needed here, but cast to int for safety)
-        $total = (int)$wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `$faq_table`"));
+        $total = (int)$wpdb->get_var("SELECT COUNT(*) FROM $wpdb->prefix . 'interactive_faq'");
 
         // Calculate total pages
         $total_pages = (int)ceil($total / $per_page);
 
         // Sanitize the table name to prevent SQL injection
-        $faq_table = esc_sql($faq_table);
         $faqs = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM `$faq_table` LIMIT %d OFFSET %d",
+                "SELECT * FROM $wpdb->prefix . 'interactive_faq' LIMIT %d OFFSET %d",
                 $per_page,
                 $offset
             )
@@ -275,12 +271,10 @@ class Ifaq_DB
     public function get_single_faq_details($faq_id)
     {
         global $wpdb;
-        $faq_table = $wpdb->prefix . 'interactive_faq';
-        $wpdb = $wpdb;
 
         //Get the details for the given FAQ
         $faq = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM `$faq_table` WHERE id = %d",
+            "SELECT * FROM $wpdb->prefix . 'interactive_faq' WHERE id = %d",
             $faq_id
         ));
         $faq->categories = $this->get_ifaq_all_categories_by_faq_id($faq_id);
@@ -299,12 +293,10 @@ class Ifaq_DB
     private function get_serialized_categories_with_faq_id($faq_id)
     {
         global $wpdb;
-        $faq_table = $wpdb->prefix . 'interactive_faq';
-        $wpdb = $wpdb;
 
         //Get the serialized category_ids for the given FAQ
         return $wpdb->get_var($wpdb->prepare(
-            "SELECT category_ids FROM `$faq_table` WHERE id = %d",
+            "SELECT category_ids FROM $wpdb->prefix . 'interactive_faq' WHERE id = %d",
             $faq_id
         ));
     }
@@ -343,7 +335,6 @@ class Ifaq_DB
      */
     public function get_faq_category_details($category_ids) {
         global $wpdb;
-        $category_table = $wpdb->prefix . 'faq_category';
 
         // Sanitize IDs
         $category_ids = array_map('intval', $category_ids);
@@ -358,7 +349,7 @@ class Ifaq_DB
 
         // Prepare the final SQL with IDs
         return $wpdb->get_results($wpdb->prepare(
-           "SELECT * FROM `$category_table` WHERE `id` LIKE %s",
+           "SELECT * FROM $wpdb->prefix . 'faq_category' WHERE `id` LIKE %s",
            ...$category_ids
         ));
     }
@@ -436,7 +427,6 @@ class Ifaq_DB
     private function generate_unique_slug($base_slug, $exclude_id = null)
     {
         global $wpdb;
-        $category_table = $wpdb->prefix . 'faq_category';
         $slug = $base_slug;
         $i = 1;
 
@@ -448,7 +438,7 @@ class Ifaq_DB
                 $params[] = $exclude_id;
             }
 
-            $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `$category_table` WHERE slug = %s", ...$params));
+            $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->prefix . 'faq_category' WHERE slug = %s", ...$params));
 
             if ($exists == 0) {
                 break;
