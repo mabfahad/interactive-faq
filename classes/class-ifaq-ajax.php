@@ -9,6 +9,7 @@ class Ifaq_Ajax
         // Register AJAX handlers
         add_action('wp_ajax_save_ifaq_new', [$this, 'save_ifaq_new']);
         add_action('wp_ajax_save_ifaq_settings', [$this, 'save_ifaq_settings']);
+        add_action('wp_ajax_delete_ifaq', [$this, 'delete_ifaq']);
     }
 
     /**
@@ -46,6 +47,22 @@ class Ifaq_Ajax
             $this->send_json(true, 'Successfully added', $validation);
         }
         wp_die();
+    }
+
+    /**
+     * Handle AJAX request to Delete faq with faq ID
+     */
+    public function delete_ifaq()
+    {
+        $this->verify_nonce('ifaq_nonce_action', 'nonce');
+
+        $faq_id = intval($_POST['faq_id']);
+
+        global $wpdb;
+        $ifaq_db = new Ifaq_DB($wpdb);
+        $ifaq_db->delete_ifaq($faq_id);
+
+        $this->send_json(true, 'FAQ deleted successfully');
     }
 
     /**

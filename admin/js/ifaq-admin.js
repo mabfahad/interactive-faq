@@ -17,13 +17,13 @@
             $("#ifaq-loader").show();
             $("#ifaq-message").hide().removeClass('success error').html('');
 
-            const ifaqQuestion          = $("#ifaq_question").val().trim();
-            const ifaqAnswer            = $("#ifaq_answer").val().trim();
-            const ifaqCategories        = $('input[name="ifaq_category[]"]:checked').get().map(el => el.value);
-            const ifaqStatus            = $("#ifaq_status").val();
-            const ifaqOrderNumber       = $("#ifaq_order_number").val();
-            const isEdit                = $(this).attr('data-attribute-action');
-            const faq_id                = $(this).attr('data-attribute-id');
+            const ifaqQuestion = $("#ifaq_question").val().trim();
+            const ifaqAnswer = $("#ifaq_answer").val().trim();
+            const ifaqCategories = $('input[name="ifaq_category[]"]:checked').get().map(el => el.value);
+            const ifaqStatus = $("#ifaq_status").val();
+            const ifaqOrderNumber = $("#ifaq_order_number").val();
+            const isEdit = $(this).attr('data-attribute-action');
+            const faq_id = $(this).attr('data-attribute-id');
 
             $.ajax({
                 url: ifaq_ajax.ajax_url,
@@ -107,7 +107,7 @@
                 method: 'post',
                 data: {
                     action: 'save_ifaq_settings',
-                    settingsData:settingsData,
+                    settingsData: settingsData,
                     nonce: ifaq_ajax.ifaq_nonce,
                 },
                 success: function (response) {
@@ -131,6 +131,70 @@
                         $('#font-style').val('Arial');
                         $('#icon-style').val('Plus/Minus');
                     }
+                    setTimeout(() => {
+                        $("#ifaq-message").fadeOut();
+                    }, 3000);
+                },
+                error: function (xhr, status, error) {
+                    $("#ifaq-loader").hide();
+
+                    $("#ifaq-message")
+                        .removeClass('success')
+                        .addClass('error')
+                        .html('<span class="ifaq-close" style="float:right; cursor:pointer;">&times;</span><span class="ifaq-message-text">An unexpected error occurred. Please try again.</span>')
+                        .fadeIn();
+
+                    setTimeout(() => {
+                        $("#ifaq-message").fadeOut();
+                    }, 3000);
+                }
+            });
+        });
+
+        $('.ifaq-accordion').on('click', '.delete', function (e) {
+            e.preventDefault();
+
+            const $deleteBtn = $(this);
+            const faq_id = $deleteBtn.attr('data-faq-id');
+
+            if (!faq_id) {
+                alert('FAQ ID not found!');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this FAQ?')) {
+                return; // exit if user cancels
+            }
+
+            $("#ifaq-loader").show();
+
+            $.ajax({
+                url: ifaq_ajax.ajax_url,
+                method: 'post',
+                data: {
+                    action: 'delete_ifaq',
+                    faq_id: faq_id,
+                    nonce: ifaq_ajax.ifaq_nonce,
+                },
+                success: function (response) {
+                    $("#ifaq-loader").hide();
+
+                    const isError = response.success === false;
+                    const messageText = response.message || (isError ? 'Delete failed.' : 'FAQ deleted successfully.');
+
+                    $("#ifaq-message")
+                        .removeClass('success error')
+                        .addClass(isError ? 'error' : 'success')
+                        .html('<span class="ifaq-close" style="float:right; cursor:pointer;">&times;</span><span class="ifaq-message-text">' + messageText + '</span>')
+                        .fadeIn();
+
+                    if (!isError) {
+                        // Remove the FAQ accordion item from DOM
+                        $deleteBtn.closest('.ifaq-accordion-item').slideUp(300, function () {
+                            $(this).remove();
+                        });
+                    }
+
                     setTimeout(() => {
                         $("#ifaq-message").fadeOut();
                     }, 3000);

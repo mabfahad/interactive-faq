@@ -41,10 +41,14 @@ $total      = $faqs_data['total_pages'];
                         </div>
                         <div class="ifaq-actions">
                             <a href="<?php echo admin_url('admin.php?page=ifaq_add_new&action=edit_faq&id=' . intval($faq->id)); ?>" class="edit">Edit</a>
-                            <a href="#" class="delete">Delete</a>
+                            <a href="#" class="delete" data-faq-id="<?php echo intval($faq->id);?>">Delete</a>
                         </div>
                     </div>
                 </div>
+            <div id="ifaq-message" style="display:none; margin-top:10px; position:relative;">
+                <span class="ifaq-close" style="position:absolute; right:10px; top:8px; cursor:pointer;">&times;</span>
+                <span class="ifaq-message-text"></span>
+            </div>
             <?php endforeach; ?>
         <?php else : ?>
             <p>No FAQs found.</p>

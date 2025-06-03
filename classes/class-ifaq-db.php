@@ -132,6 +132,28 @@ class Ifaq_DB
     }
 
     /**
+     * Delete an FAQ entry from the database.
+     *
+     * This method deletes a row from the interactive_faq table based on the provided FAQ ID.
+     *
+     * @param int $faq_id The ID of the FAQ to delete.
+     * @return bool True on successful delete, false on failure.
+     */
+    public function delete_ifaq($faq_id)
+    {
+        $table = $this->wpdb->prefix . 'interactive_faq';
+
+        $result = $this->wpdb->delete(
+            $table,
+            ['id' => intval($faq_id)],
+            ['%d'] // ID is an integer
+        );
+
+        return $result !== false; // true if deleted, false otherwise
+    }
+
+
+    /**
      * Retrieve all categories from the FAQ category table.
      *
      * @return array Array of category objects.
