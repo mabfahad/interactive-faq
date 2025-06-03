@@ -20,11 +20,11 @@ class Ifaq_Ajax
         $this->verify_nonce('ifaq_nonce_action', 'nonce');
 
         $data = [
-            'question'      => sanitize_text_field($_POST['ifaqQuestion'] ?? ''),
-            'answer'        => wp_kses_post($_POST['ifaqAnswer'] ?? ''),
+            'question'      => sanitize_text_field(wp_unslash($_POST['ifaqQuestion'] ?? '')),
+            'answer'        => wp_kses_post(wp_unslash($_POST['ifaqAnswer'] ?? '')),
             'categories'    => array_map('intval', $_POST['ifaqCategories'] ?? []),
             'order_num'     => intval($_POST['ifaqOrderNumber'] ?? 0),
-            'status'        => sanitize_text_field($_POST['ifaqStatus'] ?? 'Active'),
+            'status'        => sanitize_text_field(wp_unslash($_POST['ifaqStatus'] ?? 'Active')),
             'isEdit'        => isset($_POST['isEdit']) && $_POST['isEdit'] == '1' ? 1 : 0,
             'faq_id'        => isset($_POST['faq_id']) ? intval($_POST['faq_id']) : 0,
         ];
@@ -55,7 +55,7 @@ class Ifaq_Ajax
     {
         $this->verify_nonce('ifaq_nonce_action', 'nonce');
 
-        $faq_id = intval($_POST['faq_id']);
+        $faq_id = isset($_POST['faq_id']) ? intval($_POST['faq_id']) : 0;
 
         $ifaq_db = new Ifaq_DB();
         $ifaq_db->delete_ifaq($faq_id);
@@ -70,7 +70,7 @@ class Ifaq_Ajax
     {
         $this->verify_nonce('ifaq_nonce_action', 'nonce');
 
-        $settings = maybe_serialize($_POST['settingsData']);
+        $settings = isset($_POST['settingsData']) ? maybe_serialize(wp_unslash($_POST['settingsData'])) : '';
 
         update_option('ifaq_settings', $settings);
 
