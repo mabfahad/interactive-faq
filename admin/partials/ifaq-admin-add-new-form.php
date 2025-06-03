@@ -8,16 +8,20 @@ $isEdit = false;
 $edit_faq = null;
 // Handle Edit - Pre-fill form data if editing
 if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'])) {
-    $faq_id = intval(wp_unslash($_GET['id']));
-    $edit_faq = $ifaq_db->get_single_faq_details($faq_id);
-
-    // Extract category IDs from objects
-    if (!empty($edit_faq->categories)) {
-        $selected_categories = array_map(fn($cat) => $cat->id, $edit_faq->categories);
+    if (!isset($_POST['ifaq_display_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['ifaq_display_nonce'])), 'ifaq_display_action')) {
+        echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> Security check failed.</p></div>';
     } else {
-        $selected_categories = [];
+        $faq_id = intval(wp_unslash($_GET['id']));
+        $edit_faq = $ifaq_db->get_single_faq_details($faq_id);
+
+        // Extract category IDs from objects
+        if (!empty($edit_faq->categories)) {
+            $selected_categories = array_map(fn($cat) => $cat->id, $edit_faq->categories);
+        } else {
+            $selected_categories = [];
+        }
+        $isEdit = true;
     }
-    $isEdit = true;
 } else {
     $selected_categories = [];
 }
@@ -28,6 +32,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'
     <h1><?php echo $isEdit ? 'Edit FAQ' : 'Add New FAQ'; ?></h1>
 
     <form id="ifaq-form" method="post" data-faq-id="<?php echo $edit_faq ? intval($edit_faq->id) : 0; ?>">
+        <?php
+            if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'])) {
+                wp_nonce_field('ifaq_add_action', 'ifaq_add_nonce');
+            }
+        ?>
         <div class="ifaq-form-group">
             <div class="ifaq-form-row">
                 <label for="ifaq_question">Question<span class="ifaq_required">*</span></label>
