@@ -40,7 +40,7 @@ $total      = $faqs_data['total_pages'];
                             Created: <?php echo esc_html($faq->created_at); ?>
                         </div>
                         <div class="ifaq-actions">
-                            <a href="#" class="edit" data-faq-id="<?php echo esc_html($faq->id); ?>">Edit</a>
+                            <a href="<?php echo admin_url('admin.php?page=ifaq_add_new&action=edit_faq&id=' . intval($faq->id)); ?>" class="edit">Edit</a>
                             <a href="#" class="delete">Delete</a>
                         </div>
                     </div>

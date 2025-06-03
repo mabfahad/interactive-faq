@@ -17,12 +17,14 @@ class Ifaq_Ajax
     public function save_ifaq_new()
     {
         $this->verify_nonce('ifaq_nonce_action', 'nonce');
-
+//        echo "<pre>";print_r($_POST);echo "</pre>";exit();
         $data = [
             'question'   => sanitize_text_field($_POST['ifaqQuestion'] ?? ''),
             'answer'     => wp_kses_post($_POST['ifaqAnswer'] ?? ''),
             'categories' => array_map('intval', $_POST['ifaqCategories'] ?? []),
-            'status'     => sanitize_text_field($_POST['ifaqStatus'] ?? 'Active')
+            'status'     => sanitize_text_field($_POST['ifaqStatus'] ?? 'Active'),
+            'isEdit'     => isset($_POST['isEdit']) && $_POST['isEdit'] == '1' ? 1 : 0,
+            'faq_id'     => isset($_POST['faq_id']) ? intval($_POST['faq_id']) : 0,
         ];
 
         $validation = $this->validate_faq_data($data);
@@ -32,9 +34,17 @@ class Ifaq_Ajax
         }
 
         global $wpdb;
-        (new Ifaq_DB($wpdb))->insert_ifaq($data);
+        $ifaq_db = new Ifaq_DB($wpdb);
 
-        $this->send_json(true, 'Successfully added', $validation);
+        // Insert or update based on isEdit flag
+        if ($data['isEdit'] == 1 && $data['faq_id'] > 0) {
+            $ifaq_db->update_ifaq($data['faq_id'], $data);
+            $this->send_json(true, 'Successfully updated', $validation);
+        } else {
+            $ifaq_db->insert_ifaq($data);
+            $this->send_json(true, 'Successfully added', $validation);
+        }
+        wp_die();
     }
 
     /**

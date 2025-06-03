@@ -11,9 +11,9 @@
         });
 
         // Handle FAQ form submission via AJAX
-        $("#ifaq-add-new-form button").on('click', function (e) {
+        $("#ifaq-form button").on('click', function (e) {
             e.preventDefault();
-
+            // alert('test');return false;
             $("#ifaq-loader").show();
             $("#ifaq-message").hide().removeClass('success error').html('');
 
@@ -21,6 +21,8 @@
             const ifaqAnswer = $("#ifaq_answer").val().trim();
             const ifaqCategories = $('input[name="ifaq_category[]"]:checked').get().map(el => el.value);
             const ifaqStatus = $("#ifaq_status").val();
+            const isEdit = $(this).attr('data-attribute-action');
+            const faq_id = $(this).attr('data-attribute-id');
 
             $.ajax({
                 url: ifaq_ajax.ajax_url,
@@ -31,6 +33,8 @@
                     ifaqAnswer,
                     ifaqCategories,
                     ifaqStatus,
+                    isEdit,
+                    faq_id,
                     nonce: ifaq_ajax.ifaq_nonce,
                 },
                 success: function (response) {

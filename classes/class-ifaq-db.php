@@ -114,7 +114,7 @@ class Ifaq_DB
             [
                 'question' => $data['question'],
                 'answer' => $data['answer'],
-                'category_ids' => maybe_serialize($data['category_ids'] ?? []),
+                'category_ids' => maybe_serialize($data['categories'] ?? []),
                 'status' => $data['status'],
                 'created_at' => current_time('mysql'),
             ],
@@ -201,7 +201,7 @@ class Ifaq_DB
             'question' => $data['question'] ?? '',
             'answer' => $data['answer'] ?? '',
             // Serialize category IDs array before saving
-            'category_ids' => isset($data['category_ids']) ? maybe_serialize($data['category_ids']) : '',
+            'category_ids' => isset($data['categories']) ? maybe_serialize($data['categories']) : '',
             'status' => $data['status'] ?? 'active',
             'order_num' => isset($data['order_num']) ? intval($data['order_num']) : 0,
         ];
