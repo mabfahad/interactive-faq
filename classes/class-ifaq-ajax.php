@@ -17,17 +17,18 @@ class Ifaq_Ajax
      */
     public function save_ifaq_new()
     {
-        $this->verify_nonce('ifaq_nonce_action', 'nonce');
+        check_ajax_referer('ifaq_nonce_action', 'none', false);
 
         $data = [
             'question'      => sanitize_text_field(wp_unslash($_POST['ifaqQuestion'] ?? '')),
             'answer'        => wp_kses_post(wp_unslash($_POST['ifaqAnswer'] ?? '')),
-            'categories'    => array_map('intval', $_POST['ifaqCategories'] ?? []),
-            'order_num'     => intval($_POST['ifaqOrderNumber'] ?? 0),
+            'categories'    => array_map('intval', wp_unslash($_POST['ifaqCategories'] ?? [])),
+            'order_num'     => intval(wp_unslash($_POST['ifaqOrderNumber'] ?? 0)),
             'status'        => sanitize_text_field(wp_unslash($_POST['ifaqStatus'] ?? 'Active')),
-            'isEdit'        => isset($_POST['isEdit']) && $_POST['isEdit'] == '1' ? 1 : 0,
-            'faq_id'        => isset($_POST['faq_id']) ? intval($_POST['faq_id']) : 0,
+            'isEdit'        => isset($_POST['isEdit']) && sanitize_text_field(wp_unslash($_POST['isEdit'])) === '1' ? 1 : 0,
+            'faq_id'        => isset($_POST['faq_id']) ? intval(wp_unslash($_POST['faq_id'])) : 0,
         ];
+
 
         $validation = $this->validate_faq_data($data);
 
@@ -53,9 +54,9 @@ class Ifaq_Ajax
      */
     public function delete_ifaq()
     {
-        $this->verify_nonce('ifaq_nonce_action', 'nonce');
+        check_ajax_referer('ifaq_nonce_action', 'none', false);
 
-        $faq_id = isset($_POST['faq_id']) ? intval($_POST['faq_id']) : 0;
+        $faq_id = isset($_POST['faq_id']) ? intval(wp_unslash($_POST['faq_id'])) : 0;
 
         $ifaq_db = new Ifaq_DB();
         $ifaq_db->delete_ifaq($faq_id);
@@ -68,23 +69,13 @@ class Ifaq_Ajax
      */
     public function save_ifaq_settings()
     {
-        $this->verify_nonce('ifaq_nonce_action', 'nonce');
+        check_ajax_referer('ifaq_nonce_action', 'none', false);
 
-        $settings = isset($_POST['settingsData']) ? maybe_serialize(wp_unslash($_POST['settingsData'])) : '';
+        $settings = isset($_POST['settingsData']) ? maybe_serialize(array_map('sanitize_text_field', wp_unslash($_POST['settingsData']))) : '';
 
         update_option('ifaq_settings', $settings);
 
         $this->send_json(true, 'Settings saved successfully');
-    }
-
-    /**
-     * Verify nonce or send error response
-     */
-    private function verify_nonce(string $action, string $name)
-    {
-        if (!check_ajax_referer($action, $name, false)) {
-            $this->send_json(false, 'Invalid or expired nonce');
-        }
     }
 
     /**
