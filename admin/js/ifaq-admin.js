@@ -82,16 +82,18 @@
         //Handle all the settings
         $('.ifaq-sattings-save').on('click', function (e) {
             e.preventDefault();
+            const isSave = $(this).attr('data-attribute-action') === 'save';
+
             $("#ifaq-loader").show();
 
             const settingsData = {
-                displayStyle: $('#display-style').val(),
-                showSearchBox: $('#search-box').is(':checked'),
-                faqsPerPage: parseInt($('#ifaq-limit').val(), 10),
-                enableCategories: $('#enable-ifaq-cat').is(':checked'),
-                colorScheme: $('#color-scheme').val(),
-                fontStyle: $('#font-style').val(),
-                iconStyle: $('#icon-style').val()
+                displayStyle: isSave ? $('#display-style').val() : 'accordion',
+                showSearchBox: isSave ? $('#search-box').is(':checked') : false,
+                faqsPerPage: isSave ? +$('#ifaq-limit').val() : 10,
+                enableCategories: isSave ? $('#enable-ifaq-cat').is(':checked') : false,
+                colorScheme: isSave ? $('#color-scheme').val() : '#007bff',
+                fontStyle: isSave ? $('#font-style').val() : 'Arial',
+                iconStyle: isSave ? $('#icon-style').val() : 'Plus/Minus'
             };
 
             $.ajax({
@@ -133,8 +135,6 @@
                 }
             });
         });
-
-
     });
 
 })(jQuery);

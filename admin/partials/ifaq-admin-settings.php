@@ -83,8 +83,8 @@ $enableCategories = filter_var($settings['enableCategories'], FILTER_VALIDATE_BO
     </div>
 
     <div class="form-actions">
-        <button class="button button-primary ifaq-sattings-save">Save Changes</button>
-        <button class="button button-secondary ifaq-sattings-reset-default">Reset to Default</button>
+        <button class="button button-primary ifaq-sattings-save" data-attribute-action="save">Save Changes</button>
+        <button class="button button-secondary ifaq-sattings-reset-default ifaq-sattings-save" data-attribute-action="reset">Reset to Default</button>
     </div>
 
     <div id="ifaq-loader" style="display:none; text-align:center; margin-top:10px;">
