@@ -279,3 +279,31 @@ interactive faq lists
 .text-danger {
     color: #dc3545;
 }
+/*Ifaq Message*/
+#ifaq-message {
+    padding: 10px 35px 10px 10px;
+    border-radius: 4px;
+    position: relative;
+}
+
+#ifaq-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+#ifaq-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.ifaq-close {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 20px;
+}

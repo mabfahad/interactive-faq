@@ -49,5 +49,13 @@
         <div class="form-actions">
             <button class="button button-primary">Save</button>
         </div>
+
+        <div id="ifaq-loader" style="display:none; text-align:center; margin-top:10px;">
+            <span class="spinner is-active"></span> Saving FAQ...
+        </div>
+        <div id="ifaq-message" style="display:none; margin-top:10px; position:relative;">
+            <span class="ifaq-close" style="position:absolute; right:10px; top:8px; cursor:pointer;">&times;</span>
+            <span class="ifaq-message-text"></span>
+        </div>
     </form>
 </div>

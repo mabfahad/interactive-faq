@@ -25,7 +25,7 @@ class Ifaq_Ajax
         $validated = $this->validate_faq_data($inserted_data);
 
         if (!empty($validated['errors'])) {
-            wp_send_json(['status'=>400,'message'=>'required fields are missing','data'=>$validated['errors']]);
+            wp_send_json(['success'=>false,'message'=>'required fields are missing','data'=>$validated['errors']]);
             exit();
         }
 
@@ -33,7 +33,7 @@ class Ifaq_Ajax
         $ifaq_db = new Ifaq_DB($wpdb);
         $ifaq_db->insert_ifaq($inserted_data);
 
-        wp_send_json(['status'=>201,'message'=>'Successfully added','data'=>$validated]);
+        wp_send_json(['success'=>true,'message'=>'Successfully added','data'=>$validated]);
 
         wp_die();
     }
