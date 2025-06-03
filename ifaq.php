@@ -21,7 +21,7 @@
  * Author URI:        https://abfahad.me/
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       ifaq
+ * Text Domain:       interactive-faq
  * Domain Path:       /languages
  */
 

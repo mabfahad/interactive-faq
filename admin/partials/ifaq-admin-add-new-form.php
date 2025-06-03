@@ -8,7 +8,7 @@ $isEdit = false;
 $edit_faq = null;
 // Handle Edit - Pre-fill form data if editing
 if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'])) {
-    $faq_id = intval($_GET['id']);
+    $faq_id = intval(wp_unslash($_GET['id']));
     $edit_faq = $ifaq_db->get_single_faq_details($faq_id);
 
     // Extract category IDs from objects
@@ -50,7 +50,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'
                         $checked = in_array($category->id, $selected_categories) ? 'checked' : '';
                     ?>
                         <label>
-                        <input type="checkbox" name="ifaq_category[]" value="<?php echo esc_attr($category->id); ?>" <?php echo esc_attr($checked); ?>>
+                            <input type="checkbox" name="ifaq_category[]" value="<?php echo esc_attr($category->id); ?>" <?php echo esc_attr($checked); ?>>
                             <?php echo esc_html($category->title); ?>
                         </label><br>
                     <?php endforeach; ?>
@@ -60,7 +60,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'
             <div class="ifaq-form-row">
                 <label for="ifaq_order_number">Order Number<span class="ifaq_required">*</span></label>
                 <div class="input-field">
-                    <input type="number" name="ifaq_order_number" id="ifaq_order_number" required value="<?php echo esc_attr( $edit_faq ? $edit_faq->order_num : 0 ); ?>">
+                    <input type="number" name="ifaq_order_number" id="ifaq_order_number" required value="<?php echo esc_attr($edit_faq ? $edit_faq->order_num : 0); ?>">
                 </div>
             </div>
 
@@ -77,7 +77,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'
 
         <div class="form-actions">
             <button data-attribute-action="<?php echo esc_attr($isEdit); ?>" data-attribute-id="<?php echo esc_attr($faq_id); ?>" type="submit" class="button button-primary"><?php echo esc_html($isEdit ? 'Update' : 'Save'); ?>
-        </button>
+            </button>
 
         </div>
 
