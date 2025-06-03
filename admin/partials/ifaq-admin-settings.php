@@ -16,9 +16,10 @@ $enableCategories = filter_var($settings['enableCategories'], FILTER_VALIDATE_BO
             <div class="input-field">
                 <select id="display-style">
                     <?php foreach (['accordion', 'timeline', 'grid', 'table'] as $style): ?>
-                        <option value="<?= esc_attr($style); ?>" <?= selected($settings['displayStyle'], $style, false); ?>>
-                            <?= ucfirst($style); ?>
+                        <option value="<?php echo esc_attr($style); ?>" <?php echo selected($settings['displayStyle'], $style, false); ?>>
+                            <?php echo esc_html(ucfirst($style)); ?>
                         </option>
+
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -34,7 +35,7 @@ $enableCategories = filter_var($settings['enableCategories'], FILTER_VALIDATE_BO
         <div class="ifaq-form-row">
             <label for="ifaq-limit">FAQs per Page</label>
             <div class="input-field">
-                <input type="number" id="ifaq-limit" value="<?= esc_attr($settings['faqsPerPage']); ?>" min="1"/>
+                <input type="number" id="ifaq-limit" value="<?php echo esc_attr($settings['faqsPerPage']); ?>" min="1"/>
             </div>
         </div>
 
@@ -51,7 +52,7 @@ $enableCategories = filter_var($settings['enableCategories'], FILTER_VALIDATE_BO
         <div class="ifaq-form-row">
             <label for="color-scheme">Color Scheme</label>
             <div class="input-field">
-                <input type="color" id="color-scheme" value="<?= esc_attr($settings['colorScheme']); ?>"/>
+                <input type="color" id="color-scheme" value="<?php echo esc_attr($settings['colorScheme']); ?>"/>
             </div>
         </div>
 
@@ -60,8 +61,8 @@ $enableCategories = filter_var($settings['enableCategories'], FILTER_VALIDATE_BO
             <div class="input-field">
                 <select id="font-style">
                     <?php foreach (['Arial', 'Roboto', 'Open Sans'] as $font): ?>
-                        <option value="<?= esc_attr($font); ?>" <?= selected($settings['fontStyle'], $font, false); ?>>
-                            <?= esc_html($font); ?>
+                        <option value="<?php echo esc_attr($font); ?>" <?php echo selected($settings['fontStyle'], $font, false); ?>>
+                            <?php echo esc_html($font); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -73,8 +74,8 @@ $enableCategories = filter_var($settings['enableCategories'], FILTER_VALIDATE_BO
             <div class="input-field">
                 <select id="icon-style">
                     <?php foreach (['Plus/Minus', 'Chevron', 'Arrow'] as $icon): ?>
-                        <option value="<?= esc_attr($icon); ?>" <?= selected($settings['iconStyle'], $icon, false); ?>>
-                            <?= esc_html($icon); ?>
+                        <option value="<?php echo esc_attr($icon); ?>" <?php echo selected($settings['iconStyle'], $icon, false); ?>>
+                            <?php echo esc_html($icon); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>

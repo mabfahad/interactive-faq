@@ -1,7 +1,7 @@
 <?php
 global $wpdb;
 $category_table = $wpdb->prefix . 'faq_category';
-$ifaq_db = new Ifaq_DB($wpdb);
+$ifaq_db = new Ifaq_DB();
 
 // Handle Add/Edit
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_title'])) {

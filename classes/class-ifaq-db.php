@@ -2,12 +2,6 @@
 
 class Ifaq_DB
 {
-    protected $wpdb;
-
-    public function __construct($wpdb)
-    {
-        $this->wpdb = $wpdb;
-    }
 
     /**
      * Creates necessary database tables during plugin activation.
@@ -37,11 +31,11 @@ class Ifaq_DB
      */
     private function create_tables()
     {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
 
-        $charset_collate = $this->wpdb->get_charset_collate();
-
-        $faq_table = $this->wpdb->prefix . 'interactive_faq';
-        $category_table = $this->wpdb->prefix . 'faq_category';
+        $faq_table = $wpdb->prefix . 'interactive_faq';
+        $category_table = $wpdb->prefix . 'faq_category';
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -81,10 +75,11 @@ class Ifaq_DB
      */
     private function deleteTables()
     {
+        global $wpdb;
         $table_names = ['interactive_faq', 'faq_category'];
         foreach ($table_names as $table_name) {
-            $table = $this->wpdb->prefix . $table_name;
-            $this->wpdb->query("DROP TABLE IF EXISTS $table");
+            $table = $wpdb->prefix . $table_name;
+            $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS `%s`", $table));
         }
     }
 
@@ -107,9 +102,10 @@ class Ifaq_DB
 
     public function insert_ifaq($data)
     {
-        $table = $this->wpdb->prefix . 'interactive_faq';
+        global $wpdb;
+        $table = $wpdb->prefix . 'interactive_faq';
 
-        $result = $this->wpdb->insert(
+        $result = $wpdb->insert(
             $table,
             [
                 'question' => $data['question'],
@@ -141,9 +137,10 @@ class Ifaq_DB
      */
     public function delete_ifaq($faq_id)
     {
-        $table = $this->wpdb->prefix . 'interactive_faq';
+        global $wpdb;
+        $table = $wpdb->prefix . 'interactive_faq';
 
-        $result = $this->wpdb->delete(
+        $result = $wpdb->delete(
             $table,
             ['id' => intval($faq_id)],
             ['%d'] // ID is an integer
@@ -160,8 +157,9 @@ class Ifaq_DB
      */
     public function get_ifaq_all_categories()
     {
-        $category_table = $this->wpdb->prefix . 'faq_category';
-        return $this->wpdb->get_results(" SELECT * FROM $category_table");
+        global $wpdb;
+        $category_table = $wpdb->prefix . 'faq_category';
+        return $wpdb->get_results($wpdb->prepare(" SELECT * FROM `$category_table`"));
     }
 
     /**
@@ -171,27 +169,29 @@ class Ifaq_DB
      */
     public function get_all_ifaqs($page = 1, $per_page = 10)
     {
-        $faq_table = $this->wpdb->prefix . 'interactive_faq';
+        global $wpdb;
+        $faq_table = $wpdb->prefix . 'interactive_faq';
+        $wpdb = $wpdb;
 
         $page = max(1, intval($page));
         $per_page = max(1, intval($per_page));
         $offset = ($page - 1) * $per_page;
 
-        // Get total count for pagination
-        $total = $this->wpdb->get_var("SELECT COUNT(*) FROM $faq_table");
+        // Get total count for pagination (no placeholders needed here, but cast to int for safety)
+        $total = (int)$wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `$faq_table`"));
 
         // Calculate total pages
         $total_pages = (int)ceil($total / $per_page);
 
-        // Fetch paginated FAQs
-        $faqs = $this->wpdb->get_results($this->wpdb->prepare(
-            "SELECT * FROM $faq_table LIMIT %d OFFSET %d",
-            $per_page,
-            $offset
-        ));
-
-        // Attach categories to each FAQ
-        $faqs = $this->attach_categories_to_faqs($faqs);
+        // Sanitize the table name to prevent SQL injection
+        $faq_table = esc_sql($faq_table);
+        $faqs = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM `$faq_table` LIMIT %d OFFSET %d",
+                $per_page,
+                $offset
+            )
+        );
 
         return [
             'faqs' => $faqs,
@@ -217,7 +217,8 @@ class Ifaq_DB
      */
     public function update_ifaq($faq_id, $data)
     {
-        $faq_table = $this->wpdb->prefix . 'interactive_faq';
+        global $wpdb;
+        $faq_table = $wpdb->prefix . 'interactive_faq';
 
         // Prepare data array for update
         $update_data = [
@@ -236,7 +237,7 @@ class Ifaq_DB
         $where = ['id' => intval($faq_id)];
         $where_format = ['%d'];
 
-        $updated = $this->wpdb->update($faq_table, $update_data, $where, $format, $where_format);
+        $updated = $wpdb->update($faq_table, $update_data, $where, $format, $where_format);
 
         return ($updated !== false);
     }
@@ -273,11 +274,13 @@ class Ifaq_DB
      */
     public function get_single_faq_details($faq_id)
     {
-        $faq_table = $this->wpdb->prefix . 'interactive_faq';
+        global $wpdb;
+        $faq_table = $wpdb->prefix . 'interactive_faq';
+        $wpdb = $wpdb;
 
         //Get the details for the given FAQ
-        $faq = $this->wpdb->get_row($this->wpdb->prepare(
-            "SELECT * FROM $faq_table WHERE id = %d",
+        $faq = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM `$faq_table` WHERE id = %d",
             $faq_id
         ));
         $faq->categories = $this->get_ifaq_all_categories_by_faq_id($faq_id);
@@ -295,11 +298,13 @@ class Ifaq_DB
      */
     private function get_serialized_categories_with_faq_id($faq_id)
     {
-        $faq_table = $this->wpdb->prefix . 'interactive_faq';
+        global $wpdb;
+        $faq_table = $wpdb->prefix . 'interactive_faq';
+        $wpdb = $wpdb;
 
         //Get the serialized category_ids for the given FAQ
-        return $this->wpdb->get_var($this->wpdb->prepare(
-            "SELECT category_ids FROM $faq_table WHERE id = %d",
+        return $wpdb->get_var($wpdb->prepare(
+            "SELECT category_ids FROM `$faq_table` WHERE id = %d",
             $faq_id
         ));
     }
@@ -336,21 +341,28 @@ class Ifaq_DB
      * @param array $category_ids An array of category IDs.
      * @return array Array of category objects.
      */
-    public function get_faq_category_details($category_ids)
-    {
-        $category_table = $this->wpdb->prefix . 'faq_category';
+    public function get_faq_category_details($category_ids) {
+        global $wpdb;
+        $category_table = $wpdb->prefix . 'faq_category';
 
-        //Sanitize and prepare SQL
+        // Sanitize IDs
         $category_ids = array_map('intval', $category_ids);
+
+        // If empty, return early
+        if (empty($category_ids)) {
+            return [];
+        }
+
+        // Prepare placeholders and SQL
         $placeholders = implode(',', array_fill(0, count($category_ids), '%d'));
 
-        //Fetch matching categories
-        $query = $this->wpdb->prepare(
-            "SELECT * FROM $category_table WHERE id IN ($placeholders)",
-            ...$category_ids
-        );
-        return $this->wpdb->get_results($query);
+        // Prepare the final SQL with IDs
+        return $wpdb->get_results($wpdb->prepare(
+           "SELECT * FROM `$category_table` WHERE `id` LIKE %s",
+           ...$category_ids
+        ));
     }
+
 
     /**
      * Inserts a new FAQ category into the database.
@@ -360,16 +372,18 @@ class Ifaq_DB
      * @param array $data Associative array with keys: 'title' and optionally 'slug'.
      * @return bool True if insertion was successful, false on failure.
      */
-    public function insert_faq_category($data) {
+    public function insert_faq_category($data)
+    {
+        global $wpdb;
         // Auto-generate slug if empty
         $raw_slug = empty($data['slug']) ? sanitize_title($data['title']) : sanitize_title($data['slug']);
         $slug = $this->generate_unique_slug($raw_slug);
 
-        $result = $this->wpdb->insert(
-            $this->wpdb->prefix . 'faq_category',
+        $result = $wpdb->insert(
+            $wpdb->prefix . 'faq_category',
             [
-                'title'      => sanitize_text_field($data['title']),
-                'slug'       => $slug,
+                'title' => sanitize_text_field($data['title']),
+                'slug' => $slug,
                 'created_at' => current_time('mysql'),
             ]
         );
@@ -386,16 +400,18 @@ class Ifaq_DB
      * @param array $data Associative array with keys: 'id', 'title', and optionally 'slug'.
      * @return bool True if the update was successful, false otherwise.
      */
-    public function update_faq_category($data) {
+    public function update_faq_category($data)
+    {
+        global $wpdb;
         // Auto-generate slug if empty
         $raw_slug = empty($data['slug']) ? sanitize_title($data['title']) : sanitize_title($data['slug']);
         $slug = $this->generate_unique_slug($raw_slug, $data['id']); // optional: pass ID to exclude current row from uniqueness check
 
-        $result = $this->wpdb->update(
-            $this->wpdb->prefix . 'faq_category',
+        $result = $wpdb->update(
+            $wpdb->prefix . 'faq_category',
             [
                 'title' => sanitize_text_field($data['title']),
-                'slug'  => $slug,
+                'slug' => $slug,
             ],
             [
                 'id' => intval($data['id']),
@@ -413,17 +429,18 @@ class Ifaq_DB
      * It can optionally exclude a specific category ID when checking for duplicates,
      * which is useful during updates.
      *
-     * @param string $base_slug   The initial slug (typically from the title or user input).
+     * @param string $base_slug The initial slug (typically from the title or user input).
      * @param int|null $exclude_id Optional. ID of a category to exclude from the uniqueness check.
      * @return string A unique, sanitized slug.
      */
-    private function generate_unique_slug($base_slug, $exclude_id = null) {
-        $category_table = $this->wpdb->prefix . 'faq_category';
+    private function generate_unique_slug($base_slug, $exclude_id = null)
+    {
+        global $wpdb;
+        $category_table = $wpdb->prefix . 'faq_category';
         $slug = $base_slug;
         $i = 1;
 
         while (true) {
-            $query = "SELECT COUNT(*) FROM $category_table WHERE slug = %s";
             $params = [$slug];
 
             if ($exclude_id !== null) {
@@ -431,7 +448,7 @@ class Ifaq_DB
                 $params[] = $exclude_id;
             }
 
-            $exists = $this->wpdb->get_var($this->wpdb->prepare($query, ...$params));
+            $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `$category_table` WHERE slug = %s", ...$params));
 
             if ($exists == 0) {
                 break;

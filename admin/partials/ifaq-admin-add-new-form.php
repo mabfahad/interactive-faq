@@ -1,6 +1,6 @@
 <?php
-global $wpdb;
-$ifaq_db = new Ifaq_DB($wpdb);
+
+$ifaq_db = new Ifaq_DB();
 
 // Get all categories for checkbox list
 $all_categories = $ifaq_db->get_ifaq_all_categories();
@@ -50,7 +50,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'
                         $checked = in_array($category->id, $selected_categories) ? 'checked' : '';
                     ?>
                         <label>
-                            <input type="checkbox" name="ifaq_category[]" value="<?php echo esc_attr($category->id); ?>" <?php echo $checked; ?>>
+                        <input type="checkbox" name="ifaq_category[]" value="<?php echo esc_attr($category->id); ?>" <?php echo esc_attr($checked); ?>>
                             <?php echo esc_html($category->title); ?>
                         </label><br>
                     <?php endforeach; ?>
@@ -60,7 +60,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'
             <div class="ifaq-form-row">
                 <label for="ifaq_order_number">Order Number<span class="ifaq_required">*</span></label>
                 <div class="input-field">
-                    <input type="number" name="ifaq_order_number" id="ifaq_order_number" required value="<?php echo $edit_faq ? $edit_faq->order_num : 0; ?>">
+                    <input type="number" name="ifaq_order_number" id="ifaq_order_number" required value="<?php echo esc_attr( $edit_faq ? $edit_faq->order_num : 0 ); ?>">
                 </div>
             </div>
 
@@ -76,7 +76,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'edit_faq' && isset($_GET['id'
         </div>
 
         <div class="form-actions">
-            <button data-attribute-action="<?php echo $isEdit;?>" data-attribute-id="<?php echo $faq_id;?>" type="submit" class="button button-primary"><?php echo $isEdit ? 'Update' : 'Save'; ?></button>
+            <button data-attribute-action="<?php echo esc_attr($isEdit); ?>" data-attribute-id="<?php echo esc_attr($faq_id); ?>" type="submit" class="button button-primary"><?php echo esc_html($isEdit ? 'Update' : 'Save'); ?>
+        </button>
+
         </div>
 
         <div id="ifaq-loader" style="display:none; text-align:center; margin-top:10px;">

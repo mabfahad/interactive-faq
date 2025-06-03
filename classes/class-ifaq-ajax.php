@@ -35,8 +35,7 @@ class Ifaq_Ajax
             return $this->send_json(false, 'Required fields are missing', $validation['errors']);
         }
 
-        global $wpdb;
-        $ifaq_db = new Ifaq_DB($wpdb);
+        $ifaq_db = new Ifaq_DB();
 
         // Insert or update based on isEdit flag
         if ($data['isEdit'] == 1 && $data['faq_id'] > 0) {
@@ -58,8 +57,7 @@ class Ifaq_Ajax
 
         $faq_id = intval($_POST['faq_id']);
 
-        global $wpdb;
-        $ifaq_db = new Ifaq_DB($wpdb);
+        $ifaq_db = new Ifaq_DB();
         $ifaq_db->delete_ifaq($faq_id);
 
         $this->send_json(true, 'FAQ deleted successfully');

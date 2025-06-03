@@ -13,7 +13,7 @@
  * @package           Ifaq
  *
  * @wordpress-plugin
- * Plugin Name:       Interactive FAQ Plugin
+ * Plugin Name:       Interactive FAQ Manager
  * Plugin URI:        https://abfahad.me
  * Description:       A modern FAQ plugin with search, animations, and accessibility features
  * Version:           1.0.0

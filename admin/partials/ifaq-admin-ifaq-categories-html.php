@@ -5,7 +5,8 @@
             <!-- Add/Edit Category Form -->
             <h2><?php echo isset($edit_category) ? 'Edit Category' : 'Add New Category'; ?></h2>
             <form method="post" id="ifaq-category-form">
-                <input type="hidden" name="category_id" value="<?php echo isset($edit_category) ? esc_attr($edit_category->id) : ''; ?>">
+                <input type="hidden" name="category_id"
+                       value="<?php echo isset($edit_category) ? esc_attr($edit_category->id) : ''; ?>">
 
                 <table class="form-table">
                     <tr>
@@ -52,8 +53,11 @@
                             <td><?php echo esc_html($category->slug); ?></td>
                             <td><?php echo esc_html($category->created_at); ?></td>
                             <td>
-                                <a href="<?php echo admin_url('admin.php?page=ifaq-categories&action=edit&id=' . $category->id); ?>">Edit</a> |
-                                <a href="<?php echo admin_url('admin.php?page=ifaq-categories&action=delete&id=' . $category->id); ?>" class="text-danger">Delete</a>
+                                <a href="<?php echo esc_url(admin_url('admin.php?page=ifaq-categories&action=edit&id=' . intval($category->id))); ?>">Edit</a>
+                                |
+                                <a href="<?php echo esc_url(admin_url('admin.php?page=ifaq-categories&action=delete&id=' . intval($category->id))); ?>"
+                                   class="text-danger">Delete</a>
+
                             </td>
                         </tr>
                     <?php endforeach; ?>
