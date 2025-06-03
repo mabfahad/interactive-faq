@@ -265,6 +265,7 @@ interactive faq lists
     color: #fff;
     border-color: #0073aa;
 }
+/*Ifaq Categories*/
 .ifaq-admin-categories{
     display:flex;
     flex-direction:row;
@@ -279,6 +280,13 @@ interactive faq lists
 .text-danger {
     color: #dc3545;
 }
+
+@media (max-width: 768px) {
+    .ifaq-admin-categories {
+        flex-direction: column;
+    }
+}
+
 /*Ifaq Message*/
 #ifaq-message {
     padding: 10px 35px 10px 10px;
