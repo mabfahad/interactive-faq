@@ -6,7 +6,7 @@ $ifaq_db = new Ifaq_DB();
 // Handle Add/Edit
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_title'])) {
     // Verify nonce for security
-    if (!isset($_POST['ifaq_category_nonce']) || !wp_verify_nonce(wp_unslash($_POST['ifaq_category_nonce']), 'ifaq_category_action')) {
+    if (!isset($_POST['ifaq_category_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['ifaq_category_nonce'])), 'ifaq_category_action')) {
         echo '<div class="notice notice-error is-dismissible"><p><strong>Error:</strong> Security check failed.</p></div>';
     } else {
         $title = sanitize_text_field(wp_unslash($_POST['category_title']));
@@ -35,7 +35,8 @@ $categories = $ifaq_db->get_ifaq_all_categories();
 // Handle Edit - Pre-fill form
 $edit_category = null;
 if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) {
-    $edit_category = $ifaq_db->get_faq_category_details([$_GET['id']])[0];
+    $category_id = isset($_GET['id']) ? intval(wp_unslash($_GET['id'])) : 0;
+    $edit_category = $ifaq_db->get_faq_category_details([$category_id])[0];
 }
 
 // Handle Delete
