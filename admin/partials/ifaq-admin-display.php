@@ -14,8 +14,9 @@
 
 global $wpdb;
 $ifaq_db    = new Ifaq_DB($wpdb);
+$ifaq_settings = maybe_unserialize(get_option('ifaq_settings'));
 $page       = isset($_GET['paged']) ? max(1, intval($_GET['paged'])) : 1;
-$per_page   = 1;
+$per_page   = $ifaq_settings['faqsPerPage'] ?? 10;
 $faqs_data  = $ifaq_db->get_all_ifaqs($page, $per_page);
 $faqs       = $faqs_data['faqs'];
 $current    = $faqs_data['current_page'];
