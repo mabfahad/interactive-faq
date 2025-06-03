@@ -118,6 +118,7 @@
 
                     setTimeout(() => {
                         $("#ifaq-message").fadeOut();
+                        location.reload();
                     }, 3000);
                 },
                 error: function (xhr, status, error) {
