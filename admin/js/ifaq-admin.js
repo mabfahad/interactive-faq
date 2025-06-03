@@ -116,9 +116,17 @@
                         .html('<span class="ifaq-close" style="float:right; cursor:pointer;">&times;</span><span class="ifaq-message-text">' + messageText + '</span>')
                         .fadeIn();
 
+                    if (!isSave) {
+                        $('#display-style').val('accordion');
+                        $('#search-box').prop('checked', false);
+                        $('#ifaq-limit').val(10);
+                        $('#enable-ifaq-cat').prop('checked', false);
+                        $('#color-scheme').val('#007bff');
+                        $('#font-style').val('Arial');
+                        $('#icon-style').val('Plus/Minus');
+                    }
                     setTimeout(() => {
                         $("#ifaq-message").fadeOut();
-                        location.reload();
                     }, 3000);
                 },
                 error: function (xhr, status, error) {
