@@ -79,7 +79,8 @@ class Ifaq_DB
         $table_names = ['interactive_faq', 'faq_category'];
         foreach ($table_names as $table_name) {
             $table = $wpdb->prefix . $table_name;
-            $wpdb->query("DROP TABLE IF EXISTS `$table`");
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+            $wpdb->query("DROP TABLE IF EXISTS `{$table}`");
         }
     }
 
@@ -129,7 +130,6 @@ class Ifaq_DB
             // $faq_id = $wpdb->insert_id; // Useful if clearing specific new FAQ cache, not strictly needed for list caches
             $cache_group = 'ifaq_plugin';
             wp_cache_delete('ifaq_faqs_total_count', $cache_group);
-
         }
 
         return $result !== false; // returns true on success, false on failure
@@ -181,7 +181,7 @@ class Ifaq_DB
 
         if (false === $categories) {
             $table_name = $wpdb->prefix . 'faq_category';
-            $categories = $wpdb->get_results("SELECT * FROM `$table_name`");
+            $categories = $wpdb->get_results("SELECT * FROM `" . esc_sql($table_name) . "`");
             wp_cache_set($cache_key, $categories, $cache_group);
         }
 
@@ -208,7 +208,7 @@ class Ifaq_DB
 
         if (false === $total) {
             $faq_table = $wpdb->prefix . 'interactive_faq';
-            $total = (int)$wpdb->get_var("SELECT COUNT(*) FROM `$faq_table`");
+            $total = (int)$wpdb->get_var("SELECT COUNT(*) FROM `" . esc_sql($faq_table) . "`");
             wp_cache_set($count_cache_key, $total, $cache_group);
         }
 
@@ -222,7 +222,7 @@ class Ifaq_DB
 
         if (false === $faqs) {
             $faq_table = $wpdb->prefix . 'interactive_faq';
-            $faqs = $wpdb->get_results($wpdb->prepare("SELECT * FROM `$faq_table` LIMIT %d OFFSET %d", $per_page, $offset));
+            $faqs = $wpdb->get_results($wpdb->prepare("SELECT * FROM `" . esc_sql($faq_table) . "` LIMIT %d OFFSET %d", $per_page, $offset));
             wp_cache_set($faqs_cache_key, $faqs, $cache_group);
         }
 
@@ -257,7 +257,6 @@ class Ifaq_DB
         $update_data = [
             'question' => $data['question'] ?? '',
             'answer' => $data['answer'] ?? '',
-            'order_num' => $data['order_num'] ?? '',
             // Serialize category IDs array before saving
             'category_ids' => isset($data['categories']) ? maybe_serialize($data['categories']) : '',
             'status' => $data['status'] ?? 'active',
@@ -282,7 +281,7 @@ class Ifaq_DB
             wp_cache_delete('ifaq_faqs_total_count', $cache_group);
         }
 
-        return ($updated !== false);
+        return $updated !== false;
     }
 
     /**
@@ -325,7 +324,7 @@ class Ifaq_DB
             global $wpdb;
             $faq_table = $wpdb->prefix . 'interactive_faq';
             $faq_id = intval($faq_id);
-            $faq_row = $wpdb->get_row("SELECT * FROM `$faq_table` WHERE id = $faq_id");
+            $faq_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM `" . esc_sql($faq_table) . "` WHERE id = %d", $faq_id));
 
             if ($faq_row) {
                 $faq_row->categories = $this->get_ifaq_all_categories_by_faq_id(intval($faq_id));
@@ -359,7 +358,7 @@ class Ifaq_DB
             $faq_table = $wpdb->prefix . 'interactive_faq';
 
             $serialized_ids = $wpdb->get_var($wpdb->prepare(
-                "SELECT category_ids FROM `$faq_table` WHERE id = %d",
+                "SELECT category_ids FROM `" . esc_sql($faq_table) . "` WHERE id = %d",
                 absint($faq_id)
             ));
             wp_cache_set($cache_key, $serialized_ids, $cache_group);
@@ -427,7 +426,7 @@ class Ifaq_DB
             // Prepare placeholders for the IN clause
             $placeholders = implode(',', array_fill(0, count($category_ids), '%d'));
 
-            $details = $wpdb->get_results($wpdb->prepare("SELECT * FROM `$category_table` WHERE `id` IN ($placeholders)", ...$category_ids));
+            $details = $wpdb->get_results($wpdb->prepare("SELECT * FROM `" . esc_sql($category_table) . "` WHERE `id` IN ($placeholders)", ...$category_ids));
 
             wp_cache_set($cache_key, $details, $cache_group);
         }
@@ -522,21 +521,24 @@ class Ifaq_DB
         $slug_to_test = sanitize_title($base_slug); // Ensure base_slug is sanitized initially
         $base_slug_sanitized = $slug_to_test; // Keep a sanitized version of the original base
         $i = 1;
-        $table_name = $wpdb->prefix . 'faq_category';
 
         while (true) {
             global $wpdb;
 
-            $sql = "SELECT COUNT(*) FROM `{$wpdb->prefix}table_name` WHERE slug = %s";
-            $args = [sanitize_title($slug_to_test)]; // Properly sanitize slug
+            $table = $wpdb->prefix . 'faq_category';
+            $where_clauses = ['slug = %s'];
+            $params = [sanitize_title($slug_to_test)];
 
+            // Conditionally add "id !=" clause
             if ($exclude_id !== null) {
-                $sql .= " AND id != %d";
-                $args[] = absint($exclude_id); // Better than intval() for IDs
+                $where_clauses[] = 'id != %d';
+                $params[] = absint($exclude_id);
             }
 
-            $prepared_sql = $wpdb->prepare($sql, $args); // No need for spread operator
-            $exists = $wpdb->get_var($prepared_sql);
+            // Combine WHERE clauses with AND
+            $where_sql = implode(' AND ', $where_clauses);
+            $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM `$table` WHERE $where_sql", ...$params));
+
 
             if (intval($exists) === 0) {
                 break;
