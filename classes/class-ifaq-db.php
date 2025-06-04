@@ -80,7 +80,7 @@ class Ifaq_DB
         foreach ($table_names as $table_name) {
             $table = $wpdb->prefix . $table_name;
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-            $wpdb->query("DROP TABLE IF EXISTS `{$table}`");
+            $wpdb->query("DROP TABLE IF EXISTS `%i`",$table);
         }
     }
 
@@ -106,6 +106,7 @@ class Ifaq_DB
         global $wpdb;
         $table = $wpdb->prefix . 'interactive_faq';
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $result = $wpdb->insert(
             $table,
             [
