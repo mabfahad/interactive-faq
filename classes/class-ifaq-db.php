@@ -79,7 +79,7 @@ class Ifaq_DB
         $table_names = ['interactive_faq', 'faq_category'];
         foreach ($table_names as $table_name) {
             $table = $wpdb->prefix . $table_name;
-            $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS `%s`", $table));
+            $wpdb->query("DROP TABLE IF EXISTS `$table`");
         }
     }
 
@@ -110,7 +110,7 @@ class Ifaq_DB
             [
                 'question' => $data['question'],
                 'answer' => $data['answer'],
-                'order_num' => $data['order_num'],
+                'order_num' => isset($data['order_num']) ? intval($data['order_num']) : 0,
                 'category_ids' => maybe_serialize($data['categories'] ?? []),
                 'status' => $data['status'],
                 'created_at' => current_time('mysql'),
@@ -118,11 +118,19 @@ class Ifaq_DB
             [
                 '%s', // question
                 '%s', // answer
+                '%d', // order_num should be an integer
                 '%s', // category_ids (serialized string)
                 '%s', // status
                 '%s', // created_at
             ]
         );
+
+        if ($result !== false) {
+            // $faq_id = $wpdb->insert_id; // Useful if clearing specific new FAQ cache, not strictly needed for list caches
+            $cache_group = 'ifaq_plugin';
+            wp_cache_delete('ifaq_faqs_total_count', $cache_group);
+
+        }
 
         return $result !== false; // returns true on success, false on failure
     }
@@ -146,6 +154,15 @@ class Ifaq_DB
             ['%d'] // ID is an integer
         );
 
+        if ($result !== false) {
+            $cleaned_faq_id = intval($faq_id);
+            $cache_group = 'ifaq_plugin';
+
+            wp_cache_delete('ifaq_details_' . $cleaned_faq_id, $cache_group);
+            wp_cache_delete('ifaq_serialized_categories_' . $cleaned_faq_id, $cache_group);
+            wp_cache_delete('ifaq_faqs_total_count', $cache_group);
+        }
+
         return $result !== false; // true if deleted, false otherwise
     }
 
@@ -158,7 +175,17 @@ class Ifaq_DB
     public function get_ifaq_all_categories()
     {
         global $wpdb;
-        return $wpdb->get_results(" SELECT * FROM $wpdb->prefix . 'faq_category'");
+        $cache_key = 'ifaq_all_categories';
+        $cache_group = 'ifaq_plugin';
+        $categories = wp_cache_get($cache_key, $cache_group);
+
+        if (false === $categories) {
+            $table_name = $wpdb->prefix . 'faq_category';
+            $categories = $wpdb->get_results("SELECT * FROM `$table_name`");
+            wp_cache_set($cache_key, $categories, $cache_group);
+        }
+
+        return $categories;
     }
 
     /**
@@ -174,20 +201,30 @@ class Ifaq_DB
         $per_page = max(1, intval($per_page));
         $offset = ($page - 1) * $per_page;
 
-        // Get total count for pagination (no placeholders needed here, but cast to int for safety)
-        $total = (int)$wpdb->get_var("SELECT COUNT(*) FROM $wpdb->prefix . 'interactive_faq'");
+        // Total Count Caching
+        $count_cache_key = 'ifaq_faqs_total_count';
+        $cache_group = 'ifaq_plugin';
+        $total = wp_cache_get($count_cache_key, $cache_group);
+
+        if (false === $total) {
+            $faq_table = $wpdb->prefix . 'interactive_faq';
+            $total = (int)$wpdb->get_var("SELECT COUNT(*) FROM `$faq_table`");
+            wp_cache_set($count_cache_key, $total, $cache_group);
+        }
 
         // Calculate total pages
         $total_pages = (int)ceil($total / $per_page);
 
-        // Sanitize the table name to prevent SQL injection
-        $faqs = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM $wpdb->prefix . 'interactive_faq' LIMIT %d OFFSET %d",
-                $per_page,
-                $offset
-            )
-        );
+        // Paginated FAQs Caching
+        $faqs_cache_key = "ifaq_faqs_p{$page}_pp{$per_page}";
+        // $cache_group is already defined for total count
+        $faqs = wp_cache_get($faqs_cache_key, $cache_group);
+
+        if (false === $faqs) {
+            $faq_table = $wpdb->prefix . 'interactive_faq';
+            $faqs = $wpdb->get_results($wpdb->prepare("SELECT * FROM `$faq_table` LIMIT %d OFFSET %d", $per_page, $offset));
+            wp_cache_set($faqs_cache_key, $faqs, $cache_group);
+        }
 
         return [
             'faqs' => $faqs,
@@ -235,6 +272,16 @@ class Ifaq_DB
 
         $updated = $wpdb->update($faq_table, $update_data, $where, $format, $where_format);
 
+        if ($updated !== false) {
+            $cache_group = 'ifaq_plugin';
+            // Invalidate cache for the specific FAQ
+            wp_cache_delete('ifaq_details_' . intval($faq_id), $cache_group);
+            wp_cache_delete('ifaq_serialized_categories_' . intval($faq_id), $cache_group);
+
+            // Invalidate caches for FAQ listings
+            wp_cache_delete('ifaq_faqs_total_count', $cache_group);
+        }
+
         return ($updated !== false);
     }
 
@@ -270,14 +317,25 @@ class Ifaq_DB
      */
     public function get_single_faq_details($faq_id)
     {
-        global $wpdb;
+        $cache_key = 'ifaq_details_' . intval($faq_id);
+        $cache_group = 'ifaq_plugin';
+        $faq = wp_cache_get($cache_key, $cache_group);
 
-        //Get the details for the given FAQ
-        $faq = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $wpdb->prefix . 'interactive_faq' WHERE id = %d",
-            $faq_id
-        ));
-        $faq->categories = $this->get_ifaq_all_categories_by_faq_id($faq_id);
+        if (false === $faq) {
+            global $wpdb;
+            $faq_table = $wpdb->prefix . 'interactive_faq';
+            $faq_id = intval($faq_id);
+            $faq_row = $wpdb->get_row("SELECT * FROM `$faq_table` WHERE id = $faq_id");
+
+            if ($faq_row) {
+                $faq_row->categories = $this->get_ifaq_all_categories_by_faq_id(intval($faq_id));
+                $faq = $faq_row; // Assign to $faq which will be cached
+                wp_cache_set($cache_key, $faq, $cache_group);
+            } else {
+                $faq = null; // Or handle as appropriate if FAQ not found
+                wp_cache_set($cache_key, null, $cache_group); // Cache null result
+            }
+        }
         return $faq;
     }
 
@@ -292,13 +350,21 @@ class Ifaq_DB
      */
     private function get_serialized_categories_with_faq_id($faq_id)
     {
-        global $wpdb;
+        $cache_key = 'ifaq_serialized_categories_' . intval($faq_id);
+        $cache_group = 'ifaq_plugin';
+        $serialized_ids = wp_cache_get($cache_key, $cache_group);
 
-        //Get the serialized category_ids for the given FAQ
-        return $wpdb->get_var($wpdb->prepare(
-            "SELECT category_ids FROM $wpdb->prefix . 'interactive_faq' WHERE id = %d",
-            $faq_id
-        ));
+        if (false === $serialized_ids) {
+            global $wpdb;
+            $faq_table = $wpdb->prefix . 'interactive_faq';
+
+            $serialized_ids = $wpdb->get_var($wpdb->prepare(
+                "SELECT category_ids FROM `$faq_table` WHERE id = %d",
+                absint($faq_id)
+            ));
+            wp_cache_set($cache_key, $serialized_ids, $cache_group);
+        }
+        return $serialized_ids;
     }
 
     /**
@@ -333,25 +399,40 @@ class Ifaq_DB
      * @param array $category_ids An array of category IDs.
      * @return array Array of category objects.
      */
-    public function get_faq_category_details($category_ids) {
+    public function get_faq_category_details($category_ids)
+    {
         global $wpdb;
 
         // Sanitize IDs
         $category_ids = array_map('intval', $category_ids);
+        $category_ids = array_unique($category_ids); // Remove duplicates
+        $category_ids = array_filter($category_ids); // Remove any zeros if they are not valid IDs
 
-        // If empty, return early
+        // If empty after filtering, return early
         if (empty($category_ids)) {
             return [];
         }
 
-        // Prepare placeholders and SQL
-        $placeholders = implode(',', array_fill(0, count($category_ids), '%d'));
+        // Create a consistent cache key
+        $sorted_ids = $category_ids;
+        sort($sorted_ids); // Sort for consistency
+        $cache_key = 'ifaq_cat_details_' . implode('_', $sorted_ids);
+        $cache_group = 'ifaq_plugin';
 
-        // Prepare the final SQL with IDs
-        return $wpdb->get_results($wpdb->prepare(
-           "SELECT * FROM $wpdb->prefix . 'faq_category' WHERE `id` LIKE %s",
-           ...$category_ids
-        ));
+        $details = wp_cache_get($cache_key, $cache_group);
+
+        if (false === $details) {
+            $category_table = $wpdb->prefix . 'faq_category';
+
+            // Prepare placeholders for the IN clause
+            $placeholders = implode(',', array_fill(0, count($category_ids), '%d'));
+
+            $details = $wpdb->get_results($wpdb->prepare("SELECT * FROM `$category_table` WHERE `id` IN ($placeholders)", ...$category_ids));
+
+            wp_cache_set($cache_key, $details, $cache_group);
+        }
+
+        return $details;
     }
 
 
@@ -378,6 +459,12 @@ class Ifaq_DB
                 'created_at' => current_time('mysql'),
             ]
         );
+
+        if ($result !== false) {
+            $cache_group = 'ifaq_plugin';
+            wp_cache_delete('ifaq_all_categories', $cache_group);
+            // Any other relevant summary caches could be cleared here too.
+        }
 
         return $result !== false;
     }
@@ -409,6 +496,11 @@ class Ifaq_DB
             ]
         );
 
+        if ($result !== false) {
+            $cache_group = 'ifaq_plugin';
+            wp_cache_delete('ifaq_all_categories', $cache_group);
+        }
+
         return $result !== false;
     }
 
@@ -427,29 +519,32 @@ class Ifaq_DB
     private function generate_unique_slug($base_slug, $exclude_id = null)
     {
         global $wpdb;
-        $slug = $base_slug;
+        $slug_to_test = sanitize_title($base_slug); // Ensure base_slug is sanitized initially
+        $base_slug_sanitized = $slug_to_test; // Keep a sanitized version of the original base
         $i = 1;
+        $table_name = $wpdb->prefix . 'faq_category';
 
         while (true) {
-            $params = [$slug];
+            global $wpdb;
+
+            $sql = "SELECT COUNT(*) FROM `{$wpdb->prefix}table_name` WHERE slug = %s";
+            $args = [sanitize_title($slug_to_test)]; // Properly sanitize slug
 
             if ($exclude_id !== null) {
-                $query .= " AND id != %d";
-                $params[] = $exclude_id;
+                $sql .= " AND id != %d";
+                $args[] = absint($exclude_id); // Better than intval() for IDs
             }
 
-            $exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->prefix . 'faq_category' WHERE slug = %s", ...$params));
+            $prepared_sql = $wpdb->prepare($sql, $args); // No need for spread operator
+            $exists = $wpdb->get_var($prepared_sql);
 
-            if ($exists == 0) {
+            if (intval($exists) === 0) {
                 break;
             }
 
-            $slug = $base_slug . '-' . $i;
+            $slug_to_test = $base_slug_sanitized . '-' . $i;
             $i++;
         }
-
-        return $slug;
+        return $slug_to_test;
     }
-
-
 }
