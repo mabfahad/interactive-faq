@@ -11,7 +11,28 @@
  * @package    Ifaq
  * @subpackage Ifaq/public/partials
  */
-?>
+$ifaq_settings = maybe_unserialize(get_option('ifaq_settings'));
+echo "<pre>";print_r($ifaq_settings);echo "</pre>";
+$displayStyle = $ifaq_settings['displayStyle'];
 
-<!-- This file should primarily consist of HTML with a little bit of PHP. -->
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis, sunt!</p>
+switch ($displayStyle) {
+    case 'accordion':
+        require_once IFAQ_PLUGIN_DIR.'/public/partials/ifaq-public-accordion-display.php';
+        break;
+
+    case 'timeline':
+        require_once IFAQ_PLUGIN_DIR.'/public/partials/ifaq-public-timeline-display.php';
+        break;
+
+    case 'grid':
+        require_once IFAQ_PLUGIN_DIR.'/public/partials/ifaq-public-grid-display.php';
+        break;
+
+    case 'table':
+        require_once IFAQ_PLUGIN_DIR.'/public/partials/ifaq-public-table-display.php';
+        break;
+
+    default:
+        require_once IFAQ_PLUGIN_DIR.'/public/partials/ifaq-public-accordion-display.php';
+        break;
+}
