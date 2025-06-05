@@ -14,3 +14,4 @@
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis, sunt!</p>

@@ -51,7 +51,7 @@ class Ifaq_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-
+        add_shortcode('ifaq', [$this,'ifaq_shortcode_display']);
 	}
 
 	/**
@@ -99,5 +99,9 @@ class Ifaq_Public {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/ifaq-public.js', array( 'jquery' ), $this->version, false );
 
 	}
+
+    public function ifaq_shortcode_display($atts) {
+        require_once IFAQ_PLUGIN_DIR.'/public/partials/ifaq-public-display.php';
+    }
 
 }
