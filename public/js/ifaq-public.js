@@ -31,9 +31,36 @@
     $(document).ready(function () {
         // Toggle FAQ answer visibility
         $('.ifaq-question').on('click', function () {
-            var $answer = $(this).next('.ifaq-answer');
+            const $answer = $(this).next('.ifaq-answer');
             $(this).toggleClass('active');
             $answer.slideToggle(200);
+        });
+
+        //Category On Changes
+        $('#ifaq-category-filter').on('change', function () {
+            const selectedCategory = $(this).val();
+            const search = $(".ifaq-search-input").val();
+
+            $.ajax({
+                url: ifaq_frontend_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'filter_ifaq_by_category',
+                    category: selectedCategory,
+                    search: search,
+                    nonce: ifaq_frontend_ajax.ifaq_frontend_nonce,
+                },
+                beforeSend: function () {
+                    // Optional: show loader
+                },
+                success: function (response) {
+                    // Handle the response (e.g., update a div with new content)
+                    $('#ifaq-results').html(response);
+                },
+                error: function (xhr, status, error) {
+                    console.log('AJAX Error:', error);
+                }
+            });
         });
     });
 

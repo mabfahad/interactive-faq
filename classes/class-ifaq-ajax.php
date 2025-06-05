@@ -10,6 +10,7 @@ class Ifaq_Ajax
         add_action('wp_ajax_save_ifaq_new', [$this, 'save_ifaq_new']);
         add_action('wp_ajax_save_ifaq_settings', [$this, 'save_ifaq_settings']);
         add_action('wp_ajax_delete_ifaq', [$this, 'delete_ifaq']);
+        add_action('wp_ajax_filter_ifaq_by_category', [$this, 'filter_ifaq_by_category']);
     }
 
     /**
@@ -17,7 +18,7 @@ class Ifaq_Ajax
      */
     public function save_ifaq_new()
     {
-        check_ajax_referer('ifaq_nonce_action', 'none', false);
+        check_ajax_referer('ifaq_nonce_action', 'nonce', false);
 
         $data = [
             'question'      => sanitize_text_field(wp_unslash($_POST['ifaqQuestion'] ?? '')),
@@ -54,7 +55,7 @@ class Ifaq_Ajax
      */
     public function delete_ifaq()
     {
-        check_ajax_referer('ifaq_nonce_action', 'none', false);
+        check_ajax_referer('ifaq_nonce_action', 'nonce', false);
 
         $faq_id = isset($_POST['faq_id']) ? intval(wp_unslash($_POST['faq_id'])) : 0;
 
@@ -69,11 +70,26 @@ class Ifaq_Ajax
      */
     public function save_ifaq_settings()
     {
-        check_ajax_referer('ifaq_nonce_action', 'none', false);
+        check_ajax_referer('ifaq_nonce_action', 'nonce', false);
 
         $settings = isset($_POST['settingsData']) ? maybe_serialize(array_map('sanitize_text_field', wp_unslash($_POST['settingsData']))) : '';
 
         update_option('ifaq_settings', $settings);
+
+        $this->send_json(true, 'Settings saved successfully');
+    }
+
+    /**
+     * Handle AJAX request to filter category
+     */
+    public function filter_ifaq_by_category()
+    {
+        check_ajax_referer('ifaq_frontend_nonce_action', 'nonce', false);
+
+        $category = intval(wp_unslash($_POST['category'] ?? 0));
+        $search = sanitize_text_field(wp_unslash($_POST['search'] ?? ''));
+        $ifaq_data = new Ifaq_DB();
+        $faqs = $ifaq_data->get_all_ifaqs_by_category($category,1,10,$search);
 
         $this->send_json(true, 'Settings saved successfully');
     }

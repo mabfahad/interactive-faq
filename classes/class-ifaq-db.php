@@ -80,7 +80,7 @@ class Ifaq_DB
         foreach ($table_names as $table_name) {
             $table = $wpdb->prefix . $table_name;
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-            $wpdb->query("DROP TABLE IF EXISTS `%i`",$table);
+            $wpdb->query("DROP TABLE IF EXISTS `%i`", $table);
         }
     }
 
@@ -234,6 +234,68 @@ class Ifaq_DB
             'total_pages' => $total_pages,
         ];
     }
+
+    /**
+     * Retrieves all FAQs filtered by category ID and optional search string, with pagination support.
+     *
+     * @param int $category_id The ID of the category to filter FAQs by.
+     * @param int $page Optional. The current page number for pagination. Default 1.
+     * @param int $per_page Optional. Number of FAQs per page. Default 10.
+     * @param string|null $s Optional. Search keyword to match against question or answer.
+     *
+     * @return array {
+     * @type array $faqs The list of filtered FAQs for the current page.
+     * @type int $total Total number of matched FAQs.
+     * @type int $current_page Current page number.
+     * @type int $total_pages Total number of pages based on `$per_page`.
+     * }
+     */
+    public function get_all_ifaqs_by_category($category_id, $page = 1, $per_page = 10, $s = null)
+    {
+        global $wpdb;
+
+        $faq_table = $wpdb->prefix . 'interactive_faq';
+        $cache_group = 'ifaq_plugin';
+
+        $search_key = $s ? md5($s) : 'all';
+        $cache_key = "ifaq_all_for_cat_{$category_id}_s_{$search_key}";
+
+        $faqs = wp_cache_get($cache_key, $cache_group);
+
+        if ($faqs === false) {
+            $raw_faqs = $wpdb->get_results("SELECT * FROM `$faq_table`");
+
+            $faqs = array_filter($raw_faqs, function ($faq) use ($category_id, $s) {
+                $categories = maybe_unserialize($faq->category_ids);
+                $in_category = is_array($categories) && in_array($category_id, $categories);
+
+                $matches_search = true;
+                if ($s !== null && $s !== '') {
+                    $search = strtolower($s);
+                    $matches_search = stripos($faq->question, $search) !== false || stripos($faq->answer, $search) !== false;
+                }
+
+                return $in_category && $matches_search;
+            });
+
+            wp_cache_set($cache_key, $faqs, $cache_group);
+        }
+
+        $total = count($faqs);
+        $total_pages = ceil($total / $per_page);
+        $page = max(1, intval($page));
+        $offset = ($page - 1) * $per_page;
+
+        $paged_faqs = array_slice($faqs, $offset, $per_page);
+
+        return [
+            'faqs' => $paged_faqs,
+            'total' => $total,
+            'current_page' => $page,
+            'total_pages' => $total_pages,
+        ];
+    }
+
 
     /**
      * Update an existing FAQ entry by ID.

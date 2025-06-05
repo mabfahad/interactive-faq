@@ -4,9 +4,6 @@
  */
 
 /*Accordion Styles */
-/*
-interactive faq lists
- */
 .ifaq-accordion {
     background: #f9f9f9;
     border-radius: 10px;
@@ -71,53 +68,6 @@ interactive faq lists
     }
 }
 
-.ifaq-meta {
-    margin-top: 10px;
-    font-size: 12px;
-    color: #777;
-}
-
-.ifaq-status.active {
-    color: green;
-    font-weight: 600;
-}
-
-.ifaq-status.deactive {
-    color: red;
-    font-weight: 600;
-}
-
-.ifaq-actions {
-    margin-top: 10px;
-}
-
-.ifaq-actions a {
-    display: inline-block;
-    margin-right: 10px;
-    font-size: 13px;
-    padding: 6px 10px;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-}
-
-.ifaq-actions a.edit {
-    background-color: #0073aa;
-    color: #fff;
-}
-
-.ifaq-actions a.edit:hover {
-    background-color: #005a87;
-}
-
-.ifaq-actions a.delete {
-    background-color: #ca4a1f;
-    color: #fff;
-}
-
-.ifaq-actions a.delete:hover {
-    background-color: #a33e1a;
-}
 #ifaq-pagination ul {
     display: flex;
     flex-direction: row;
@@ -155,14 +105,12 @@ interactive faq lists
     flex-direction: row;
 }
 
-#ifaq-search {
-    flex: 1;
-}
-#ifaq-search input {
+#ifaq-controls input {
     padding: 8px 12px;
     font-size: 14px;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
+    flex: 1;
 }
 
 #ifaq-category-filter {

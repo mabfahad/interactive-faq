@@ -97,6 +97,10 @@ class Ifaq_Public {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/ifaq-public.js', array( 'jquery' ), $this->version, false );
+        wp_localize_script($this->plugin_name, 'ifaq_frontend_ajax', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'ifaq_frontend_nonce'    => wp_create_nonce('ifaq_frontend_nonce_action'),
+        ]);
 
 	}
 

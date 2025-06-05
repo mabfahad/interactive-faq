@@ -14,6 +14,14 @@
 $ifaq_settings = maybe_unserialize(get_option('ifaq_settings'));
 echo "<pre>";print_r($ifaq_settings);echo "</pre>";
 $displayStyle = $ifaq_settings['displayStyle'];
+$showSearchBox = $ifaq_settings['showSearchBox'];
+$faqsPerPage = $ifaq_settings['faqsPerPage'];
+$enableCategories = $ifaq_settings['enableCategories'];
+$iconStyle = $ifaq_settings['iconStyle'];
+$ifaq_db = new Ifaq_DB();
+$faqs_data = $ifaq_db->get_all_ifaqs();
+$faqs = $faqs_data['faqs'];
+$categories = $ifaq_db->get_ifaq_all_categories();
 
 switch ($displayStyle) {
     case 'accordion':
