@@ -101,7 +101,9 @@ class Ifaq_Public {
 	}
 
     public function ifaq_shortcode_display($atts) {
-        require_once IFAQ_PLUGIN_DIR.'/public/partials/ifaq-public-display.php';
+        ob_start();
+            require_once IFAQ_PLUGIN_DIR.'/public/partials/ifaq-public-display.php';
+        return ob_get_clean();
     }
 
 }
