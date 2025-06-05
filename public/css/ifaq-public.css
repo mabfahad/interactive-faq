@@ -145,3 +145,36 @@ interactive faq lists
     color: #fff;
     border-color: #0073aa;
 }
+#ifaq-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: nowrap;
+    gap: 10px;
+    flex-direction: row;
+}
+
+#ifaq-search {
+    flex: 1;
+}
+#ifaq-search input {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+#ifaq-category-filter {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    flex: 1;
+}
+@media (max-width: 768px) {
+    #ifaq-controls {
+        flex-direction: column;
+        align-items: normal;
+    }
+}
